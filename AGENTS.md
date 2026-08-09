@@ -18,8 +18,8 @@ npm run android
 
 ## 포트폴리오 설명 포인트
 - UI/데이터 분리: CatalogRepository (`preview` / `empty` / `api`)
-- 백엔드: Public / Admin JWT / Ingest Key 최소 권한 (ADR-009)
-- Content 상태머신 draft→reviewed→published
+- 백엔드: Public / Admin JWT / Ingest Key / Installation 최소 권한 (ADR-009·010)
+- Content 상태머신 draft→reviewed→published, publish→push outbox
 - 시안 근거: design-ref + DECISIONS ADR
 - 반응형: resolveLayout(360/393/412)
 

@@ -22,8 +22,8 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setenv("JWT_SECRET", "test-secret")
     monkeypatch.setenv("INGEST_API_KEY", "test-ingest-key")
     monkeypatch.setenv("CORS_ORIGINS", "http://localhost:5173")
+    monkeypatch.setenv("ENV", "development")
 
-    # 이전 import 잔여물 제거
     for name in list(sys.modules):
         if name == "app" or name.startswith("app."):
             del sys.modules[name]
@@ -54,6 +54,10 @@ def client(tmp_path, monkeypatch):
         session = TestingSession()
         try:
             yield session
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 

@@ -1,14 +1,22 @@
 # GamePickup API (`server/`)
 
-모듈형 모놀리스. 설계 근거: `../docs/BACKEND_ARCHITECTURE.md`, ADR-009.
+모듈형 모놀리스. 설계 근거: `../docs/BACKEND_ARCHITECTURE.md`, ADR-009·010.
 
 ## 역할
 
 | 역할 | 인증 | 할 일 |
 |------|------|--------|
 | Public | 없음 | 발행 조회, 문의 |
-| Admin | JWT | CRUD·검수·발행 |
+| Installation | `X-Installation-Id` + `X-Installation-Secret` | device token·preference |
+| Admin | JWT | CRUD·검수·발행·outbox dispatch |
 | Ingest | `X-Ingest-Key` | draft만 |
+
+## 푸시 계약 (인프라 제외)
+
+1. 앱: `POST /api/v1/installations` → SecureStore 저장  
+2. 앱: token·preferences 등록  
+3. Admin이 Content를 `published`로 전이 → **같은 트랜잭션에서 outbox enqueue**  
+4. `POST /api/v1/admin/push/dispatch` → 스텁 발송(`sent`). 실서비스는 FCM 워커로 교체
 
 ## 로컬 실행
 

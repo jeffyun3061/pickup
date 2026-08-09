@@ -43,16 +43,14 @@ class ContentRepository:
 
     def add(self, content: Content) -> Content:
         self.db.add(content)
-        self.db.commit()
-        self.db.refresh(content)
+        self.db.flush()
         return content
 
     def save(self, content: Content) -> Content:
         self.db.add(content)
-        self.db.commit()
-        self.db.refresh(content)
+        self.db.flush()
         return content
 
     def delete(self, content: Content) -> None:
         self.db.delete(content)
-        self.db.commit()
+        self.db.flush()

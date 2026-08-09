@@ -51,7 +51,7 @@ class AnnouncementOut(BaseModel):
     id: str
     title: str
     body: str
-    published_at: datetime
+    published_at: datetime | None = None
 
 
 class InquiryCreate(BaseModel):
@@ -152,3 +152,41 @@ class IngestContentCreate(BaseModel):
     starts_at: datetime | None = None
     ends_at: datetime | None = None
     idempotency_key: str | None = Field(default=None, max_length=120)
+
+
+class InstallationCreateOut(BaseModel):
+    installation_id: str
+    secret: str
+
+
+class DeviceTokenUpsert(BaseModel):
+    platform: Literal["android", "ios", "web"] = "android"
+    token: str = Field(min_length=8, max_length=512)
+
+
+class DeviceTokenOut(BaseModel):
+    platform: str
+    token: str
+    updated: bool
+
+
+class NotificationPrefsIn(BaseModel):
+    selected_game_news: bool = True
+    event_ending: bool = True
+    service_notices: bool = True
+
+
+class InstallationPreferencesIn(BaseModel):
+    game_ids: list[str] = Field(default_factory=list, max_length=64)
+    notifications: NotificationPrefsIn = Field(default_factory=NotificationPrefsIn)
+
+
+class InstallationPreferencesOut(BaseModel):
+    game_ids: list[str]
+    notifications: NotificationPrefsIn
+
+
+class PushDispatchOut(BaseModel):
+    processed: int
+    sent: int
+    failed: int

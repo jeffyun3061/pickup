@@ -32,6 +32,7 @@ from app.schemas.common import (
     GameUpdate,
     InquiryOut,
     LoginIn,
+    PushDispatchOut,
     TokenOut,
 )
 from app.security import create_access_token, verify_password
@@ -41,6 +42,7 @@ from app.services.mappers import (
     game_to_out,
     inquiry_to_out,
 )
+from app.services.push_service import PushService
 
 
 class AdminService:
@@ -50,6 +52,7 @@ class AdminService:
         self.contents = ContentRepository(db)
         self.announcements = AnnouncementRepository(db)
         self.inquiries = InquiryRepository(db)
+        self.push = PushService(db)
         self.settings = get_settings()
 
     def login(self, body: LoginIn) -> TokenOut:
@@ -90,6 +93,11 @@ class AdminService:
         game = self.games.get(game_id)
         if not game:
             raise HTTPException(status_code=404, detail="Game not found")
+        if self.games.count_contents(game_id) > 0:
+            raise HTTPException(
+                status_code=409,
+                detail="Game has contents; delete or reassign contents first",
+            )
         self.games.delete(game)
 
     def list_contents(self, status_filter: str | None = None) -> list[ContentOut]:
@@ -117,19 +125,15 @@ class AdminService:
 
         if force_draft:
             status_value = ContentStatus.draft
+        elif body.status == "published":
+            # 한 트랜잭션 안에서 draft→reviewed→published + outbox
+            content = self._build_content(content_id, body, ContentStatus.draft, idempotency_key)
+            self.contents.add(content)
+            return self._apply_status_chain(content.id, ["reviewed", "published"])
         else:
-            # 생성 시 draft 또는 reviewed만 허용. published는 전이로만.
-            if body.status == "published":
-                status_value = ContentStatus.draft
-                # 생성과 동시에 발행하려면 draft→reviewed→published
-                content = self._build_content(content_id, body, ContentStatus.draft, idempotency_key)
-                saved = self.contents.add(content)
-                return self._apply_status_chain(saved.id, ["reviewed", "published"])
             status_value = ContentStatus(body.status)
 
         content = self._build_content(content_id, body, status_value, idempotency_key)
-        if status_value == ContentStatus.published:
-            content.published_at = datetime.now(timezone.utc)
         saved = self.contents.add(content)
         loaded = self.contents.get(saved.id)
         assert loaded is not None
@@ -179,6 +183,7 @@ class AdminService:
         if "kind" in data and data["kind"] is not None:
             content.kind = ContentKind(data.pop("kind"))
 
+        became_published = False
         if "status" in data and data["status"] is not None:
             previous = content.status.value
             target = data.pop("status")
@@ -188,12 +193,17 @@ class AdminService:
                 raise HTTPException(status_code=400, detail=str(exc)) from exc
             content.status = ContentStatus(next_status)
             if ContentStatusMachine.requires_published_at(previous, next_status):
-                content.published_at = datetime.now(timezone.utc)
+                if content.published_at is None:
+                    content.published_at = datetime.now(timezone.utc)
+                became_published = True
 
         for key, value in data.items():
             setattr(content, key, value)
 
         self.contents.save(content)
+        if became_published:
+            self.push.enqueue_content_published(content)
+
         loaded = self.contents.get(content_id)
         assert loaded is not None
         return content_to_out(loaded, include_status=True)
@@ -208,14 +218,18 @@ class AdminService:
         return [announcement_to_out(a) for a in self.announcements.list_all()]
 
     def create_announcement(self, body: AnnouncementCreate) -> AnnouncementOut:
+        now = datetime.now(timezone.utc) if body.is_published else None
         item = Announcement(
             id=body.id or new_id("a"),
             title=body.title,
             body=body.body,
             is_published=body.is_published,
-            published_at=datetime.now(timezone.utc),
+            published_at=now,
         )
-        return announcement_to_out(self.announcements.add(item))
+        saved = self.announcements.add(item)
+        if saved.is_published:
+            self.push.enqueue_announcement_published(saved)
+        return announcement_to_out(saved)
 
     def delete_announcement(self, announcement_id: str) -> None:
         item = self.announcements.get(announcement_id)
@@ -232,3 +246,6 @@ class AdminService:
             raise HTTPException(status_code=404, detail="Inquiry not found")
         item.status = InquiryStatus.closed
         return inquiry_to_out(self.inquiries.save(item))
+
+    def dispatch_push(self, limit: int = 100) -> PushDispatchOut:
+        return self.push.dispatch_pending(limit=limit)

@@ -115,8 +115,13 @@ published ──unpublish──▶ reviewed   (실수 발행 회수)
 GET  /api/v1/games|contents|rankings|announcements   ← Public, published only
 POST /api/v1/inquiries                               ← Public, rate limit 대상
 
+POST /api/v1/installations                           ← 설치 발급 (secret 1회)
+PUT  /api/v1/installations/me/device-token           ← Installation secret
+PUT  /api/v1/installations/me/preferences            ← Installation secret
+
 POST /api/v1/admin/login                             ← Admin 자격 → JWT
 *    /api/v1/admin/**                                ← Bearer JWT
+POST /api/v1/admin/push/dispatch                     ← outbox 스텁 발송
 
 POST /api/v1/ingest/contents                         ← X-Ingest-Key, draft only
 ```
@@ -193,8 +198,8 @@ ORM 모델 ≠ Domain 규칙:
 
 | 단계 | 내용 | 계층 영향 |
 |------|------|-----------|
-| Now | CRUD + 상태머신 + Admin/Ingest/Public | 현재 구조 |
-| Next | 익명 설치 credential + 푸시 outbox | Service + 새 테이블 |
+| Now | CRUD + 상태머신 + Admin/Ingest/Public/Installation + outbox | 현재 구조 |
+| Next | 실 FCM PushSender로 dispatch 교체 · 문의 rate limit | PushService만 |
 | Later | 읽기 전용 replica / 랭킹 집계 잡 | Repository 교체 |
 | Optional | Admin을 별도 서비스로 분리 | api/admin만 이사 |
 

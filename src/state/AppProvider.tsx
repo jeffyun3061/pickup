@@ -8,10 +8,12 @@ import {
   type ReactNode,
 } from 'react';
 
+import { bootstrapInstallationChannel } from '@/src/data/pushBootstrap';
 import {
   defaultPreferences,
   preferencesStore,
 } from '@/src/data/preferencesStore';
+import { syncInstallationPreferences } from '@/src/data/installationApi';
 import type { Preferences } from '@/src/domain/models';
 
 type AppContextValue = {
@@ -40,6 +42,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         const loaded = await preferencesStore.load();
         if (mounted) setPreferences(loaded);
+        await bootstrapInstallationChannel(loaded);
       } finally {
         if (mounted) setReady(true);
       }
@@ -49,25 +52,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const completeOnboarding = useCallback(async (gameIds: string[]) => {
-    const next = { ...preferences, onboardingCompleted: true, gameIds };
+  const persistAndSync = useCallback(async (next: Preferences) => {
     setPreferences(next);
     await preferencesStore.save(next);
-  }, [preferences]);
+    try {
+      await syncInstallationPreferences(next);
+    } catch {
+      /* 오프라인 시 로컬만 유지, 다음 기동/변경 때 재동기 */
+    }
+  }, []);
+
+  const completeOnboarding = useCallback(async (gameIds: string[]) => {
+    await persistAndSync({ ...preferences, onboardingCompleted: true, gameIds });
+  }, [preferences, persistAndSync]);
 
   const setGameIds = useCallback(async (gameIds: string[]) => {
-    const next = { ...preferences, gameIds };
-    setPreferences(next);
-    await preferencesStore.save(next);
-  }, [preferences]);
+    await persistAndSync({ ...preferences, gameIds });
+  }, [preferences, persistAndSync]);
 
   const setNotifications = useCallback(
     async (notifications: Preferences['notifications']) => {
-      const next = { ...preferences, notifications };
-      setPreferences(next);
-      await preferencesStore.save(next);
+      await persistAndSync({ ...preferences, notifications });
     },
-    [preferences],
+    [preferences, persistAndSync],
   );
 
   const resetLocalData = useCallback(async () => {

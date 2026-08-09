@@ -17,12 +17,10 @@ class InquiryRepository:
 
     def add(self, item: Inquiry) -> Inquiry:
         self.db.add(item)
-        self.db.commit()
-        self.db.refresh(item)
+        self.db.flush()
         return item
 
     def save(self, item: Inquiry) -> Inquiry:
         self.db.add(item)
-        self.db.commit()
-        self.db.refresh(item)
+        self.db.flush()
         return item

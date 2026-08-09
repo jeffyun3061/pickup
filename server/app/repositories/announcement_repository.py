@@ -25,16 +25,14 @@ class AnnouncementRepository:
 
     def add(self, item: Announcement) -> Announcement:
         self.db.add(item)
-        self.db.commit()
-        self.db.refresh(item)
+        self.db.flush()
         return item
 
     def save(self, item: Announcement) -> Announcement:
         self.db.add(item)
-        self.db.commit()
-        self.db.refresh(item)
+        self.db.flush()
         return item
 
     def delete(self, item: Announcement) -> None:
         self.db.delete(item)
-        self.db.commit()
+        self.db.flush()

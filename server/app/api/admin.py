@@ -13,6 +13,7 @@ from app.schemas.common import (
     GameUpdate,
     InquiryOut,
     LoginIn,
+    PushDispatchOut,
     TokenOut,
 )
 from app.services.admin_service import AdminService
@@ -139,3 +140,13 @@ def admin_close_inquiry(
     db: Session = Depends(db_session),
 ) -> InquiryOut:
     return AdminService(db).close_inquiry(inquiry_id)
+
+
+@router.post("/push/dispatch", response_model=PushDispatchOut)
+def admin_dispatch_push(
+    limit: int = Query(default=100, ge=1, le=500),
+    _: str = Depends(require_admin),
+    db: Session = Depends(db_session),
+) -> PushDispatchOut:
+    """outbox 스텁 발송. 프로덕션에서는 동일 계약의 워커로 교체."""
+    return AdminService(db).dispatch_push(limit=limit)

@@ -62,3 +62,15 @@
   - 시크릿은 환경변수만 (하드코딩 금지)
 - 콘텐츠 상태: `draft` → `reviewed` → `published`
 - 금지: 앱에 관리자 비밀번호 심기, ingest 키로 즉시 발행.
+
+## ADR-010: 설치 credential + device token + push outbox
+- 근거: 앱 유저 로그인 없이도 푸시 타겟이 필요하다. Admin JWT로 기기를 등록하면 최소 권한이 붕괴한다. 발행 트랜잭션 안에서 FCM을 직접 호출하면 외부 장애가 발행을 깨뜨린다.
+- 결정:
+  - `POST /api/v1/installations` — `installation_id` + `secret` 1회 발급, secret은 bcrypt 해시만 저장
+  - 쓰기: `X-Installation-Id` + `X-Installation-Secret` (네 번째 역할 Installation)
+  - `PUT .../device-token` — 배달 주소(FCM 등) upsert
+  - `PUT .../preferences` — ADR-003 알림 3종 + `game_ids` 서버 동기
+  - Content/Announcement 발행 시 **outbox enqueue만** (같은 DB 트랜잭션)
+  - `POST /api/v1/admin/push/dispatch` — 스텁 발송기(로그+sent). 실 FCM은 동일 계약 워커로 교체
+  - 요청 단위 트랜잭션: Repository는 flush만, `get_db`가 commit/rollback
+- 금지: Admin/Ingest 키로 device token 등록, publish 중 동기 FCM 호출, secret 평문 DB 저장.

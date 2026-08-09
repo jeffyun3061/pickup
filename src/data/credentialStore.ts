@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
  * 민감 설치 자격증명 전용 저장소.
  * - 예: 서버가 발급한 installation_id + secret
  * - 환경설정(알림 토글 등)은 여기 넣지 않는다 (ADR-007).
- * - 아직 설치 API 연동 전이므로 인터페이스와 키만 고정한다.
+ * - 서버 `POST /api/v1/installations` 발급값을 저장한다 (ADR-010).
  */
 export const INSTALLATION_SECRET_KEY = 'gamepickup.installation.secret.v1';
 
