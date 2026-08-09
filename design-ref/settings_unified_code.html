@@ -1,0 +1,267 @@
+<!DOCTYPE html><html class="dark" lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>알림 설정</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#ecb1ff",
+                        "surface-variant": "#353436",
+                        "tertiary-container": "#ffd38e",
+                        "on-secondary-fixed-variant": "#75009e",
+                        "background": "#131314",
+                        "secondary-fixed": "#f9d8ff",
+                        "on-secondary-fixed": "#320046",
+                        "cyber-orange": "#FFB300",
+                        "neon-yellow": "#FFD700",
+                        "inverse-primary": "#705d00",
+                        "on-surface": "#e5e2e3",
+                        "primary-fixed-dim": "#e9c400",
+                        "on-primary-container": "#705e00",
+                        "inverse-on-surface": "#313031",
+                        "error": "#ffb4ab",
+                        "outline": "#999077",
+                        "primary": "#fff6df",
+                        "on-secondary": "#520070",
+                        "surface-tint": "#e9c400",
+                        "secondary-container": "#8e00bf",
+                        "on-tertiary": "#432c00",
+                        "on-primary-fixed-variant": "#544600",
+                        "on-tertiary-fixed-variant": "#604100",
+                        "tertiary": "#fff4ea",
+                        "on-tertiary-fixed": "#281900",
+                        "on-tertiary-container": "#7f5700",
+                        "surface-container-high": "#2A2A2B",
+                        "error-container": "#93000a",
+                        "on-surface-variant": "#d0c6ab",
+                        "surface-bright": "#39393a",
+                        "surface-container": "#201f20",
+                        "surface-container-lowest": "#0e0e0f",
+                        "surface": "#131314",
+                        "surface-container-low": "#1c1b1c",
+                        "primary-container": "#ffd700",
+                        "primary-fixed": "#ffe16d",
+                        "on-error": "#690005",
+                        "on-secondary-container": "#f0bbff",
+                        "neon-purple": "#D05BFF",
+                        "outline-variant": "#444933",
+                        "text-muted": "#C4C9AC",
+                        "text-primary": "#E5E2E3",
+                        "inverse-surface": "#e5e2e3",
+                        "surface-dim": "#131314",
+                        "tertiary-fixed": "#ffdeac",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#e5e2e3",
+                        "on-primary-fixed": "#221b00",
+                        "tertiary-fixed-dim": "#ffba38",
+                        "surface-container-highest": "#353436",
+                        "on-primary": "#3a3000",
+                        "secondary-fixed-dim": "#ecb1ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "section-gap": "24px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "20px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Manrope"],
+                        "headline-xl": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "body-md": ["Manrope"],
+                        "label-tactical": ["JetBrains Mono"],
+                        "headline-md": ["Space Grotesk"],
+                        "label-data": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-tactical": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "label-data": ["10px", { "lineHeight": "1.0", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #131314;
+            color: #e5e2e3;
+            background-image: 
+                linear-gradient(rgba(255, 215, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 215, 0, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* Tactical Card Clip Path */
+        .tactical-clip {
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+        }
+        
+        /* Neon Toggle */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #FFB300;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #201f20;
+        }
+        .toggle-checkbox:checked + .toggle-label:after {
+            transform: translateX(100%);
+            border-color: white;
+            background-color: #FFB300;
+            box-shadow: 0 0 10px #FFB300;
+        }
+        
+        .hud-bracket {
+            position: relative;
+        }
+        .hud-bracket::before, .hud-bracket::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border: 1px solid #FFB300;
+            opacity: 0.5;
+        }
+        .hud-bracket::before {
+            top: -4px;
+            left: -4px;
+            border-right: none;
+            border-bottom: none;
+        }
+        .hud-bracket::after {
+            bottom: -4px;
+            right: -4px;
+            border-left: none;
+            border-top: none;
+        }
+    </style>
+</head>
+<body class="font-body-md min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="bg-background/80 flex justify-between items-center px-margin-mobile h-16 w-full docked full-width top-0 backdrop-blur-xl border-b border-outline-variant/30 flat no shadows text-cyber-orange sticky z-50"><button class="flex items-center justify-center p-2 rounded-lg bg-surface-container-high border border-outline-variant hover:text-cyber-orange transition-colors active:scale-95 duration-100"><span class="material-symbols-outlined text-on-surface">arrow_back</span></button><div class="flex items-center gap-2"><span class="text-cyber-orange font-headline-xl tracking-tighter font-bold">PIKY</span><div class="h-4 w-px bg-outline-variant/50 mx-1"></div><span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase tracking-widest">알림 설정</span></div><div class="flex items-center gap-4"><div class="hidden md:flex font-label-tactical text-label-tactical text-cyber-orange border border-cyber-orange/30 px-3 py-1 rounded bg-cyber-orange/10 items-center gap-2"><span class="">상태 : 최적화됨</span></div><div class="relative group cursor-pointer"><div class="absolute -inset-1 bg-cyber-orange/20 rounded-full blur opacity-0 group-hover:opacity-100 transition-opacity"></div><img class="w-10 h-10 rounded-full border-2 border-cyber-orange object-cover relative shadow-[0_0_10px_rgba(255,179,0,0.3)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGTRjg2-yeg56ypzqjC7NFBHLy0Jvyw1dvRsRYK5kIrTJDiy57l57PUysjI1dAASoQG5cygqElAtrEavgpCqinePZJ04futB1mw3hr_4cMSGAaa-EvK8VyWJOBCMd89RaS8Z0oeyb26lQyma3wwJC2gbWPZ0nSR6uqUTmRvrhVvooHRLsQzm6Zc3rSNRI7Uqd3cC7fEBlT_W548GYltkL61YUTnSZNDE4GyvVNCyxYYsQ1ZhfvBE2qSQ"></div></div></header>
+<main class="px-margin-mobile py-section-gap max-w-3xl mx-auto space-y-6">
+<!-- Info Card -->
+<div class="relative bg-surface-container/80 backdrop-blur-md border border-outline-variant p-6 rounded-lg tactical-clip hud-bracket">
+<div class="flex justify-between items-start mb-4">
+<div class="font-label-tactical text-label-tactical text-cyber-orange tracking-widest">시스템 설정</div>
+
+</div>
+<p class="font-body-lg text-body-lg text-text-primary">
+                데이터 스트림 프로토콜을 구성합니다. 신경 링크로 실시간 전달할 전술 업데이트의 우선순위를 선택하세요.
+            </p>
+<span class="material-symbols-outlined absolute bottom-4 right-4 text-6xl text-outline-variant/10">settings</span>
+</div>
+<div class="h-px w-full bg-gradient-to-r from-transparent via-outline-variant/50 to-transparent my-8"></div>
+<!-- Notification Toggles -->
+<div class="space-y-4">
+<!-- Toggle Item 1 -->
+<div class="bg-surface-container/60 backdrop-blur-sm border border-outline-variant p-5 rounded-lg tactical-clip flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="flex gap-4 items-start">
+<span class="material-symbols-outlined text-cyber-orange mt-1">update</span>
+<div>
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface mb-1">게임 업데이트</h3>
+<p class="font-body-md text-text-muted text-sm">서버 점검, 버전 패치 및 핫픽스에 대한 알림입니다.</p>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle1" name="toggle1" type="checkbox">
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-container-high cursor-pointer border border-outline-variant/50 transition-colors duration-200" for="toggle1">
+<div class="w-6 h-6 rounded-full bg-cyber-orange shadow-[0_0_10px_#FFB300] absolute transform translate-x-6 transition-transform duration-200"></div>
+</label>
+</div>
+</div>
+<!-- Toggle Item 2 -->
+<div class="bg-surface-container/60 backdrop-blur-sm border border-outline-variant p-5 rounded-lg tactical-clip flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="flex gap-4 items-start">
+<span class="material-symbols-outlined text-cyber-orange mt-1">event_available</span>
+<div>
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface mb-1">이벤트 시작</h3>
+<p class="font-body-md text-text-muted text-sm">새로운 기간 한정 작전 이벤트에 대한 즉각적인 배포 알림입니다.</p>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle2" name="toggle2" type="checkbox">
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-container-high cursor-pointer border border-outline-variant/50 transition-colors duration-200" for="toggle2">
+<div class="w-6 h-6 rounded-full bg-cyber-orange shadow-[0_0_10px_#FFB300] absolute transform translate-x-6 transition-transform duration-200"></div>
+</label>
+</div>
+</div>
+<!-- Toggle Item 3 -->
+<div class="bg-surface-container/60 backdrop-blur-sm border border-outline-variant p-5 rounded-lg tactical-clip flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="flex gap-4 items-start">
+<span class="material-symbols-outlined text-cyber-orange mt-1">alarm_off</span>
+<div>
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface mb-1">이벤트 종료 임박</h3>
+<p class="font-body-md text-text-muted text-sm">24시간 이내에 종료되는 작전에 대한 중요 경고입니다.</p>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle3" name="toggle3" type="checkbox">
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-container-high cursor-pointer border border-outline-variant/50 transition-colors duration-200" for="toggle3">
+<div class="w-6 h-6 rounded-full bg-cyber-orange shadow-[0_0_10px_#FFB300] absolute transform translate-x-6 transition-transform duration-200"></div>
+</label>
+</div>
+</div>
+<!-- Toggle Item 4 -->
+<div class="bg-surface-container/60 backdrop-blur-sm border border-outline-variant p-5 rounded-lg tactical-clip flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="flex gap-4 items-start">
+<span class="material-symbols-outlined text-text-muted mt-1">terminal</span>
+<div>
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface mb-1 text-text-muted">시스템 인텔</h3>
+<p class="font-body-md text-text-muted/60 text-sm">일반 시스템 공지 및 보안 펌웨어 업데이트 방송입니다.</p>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="toggle4" name="toggle4" type="checkbox">
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-container-highest cursor-pointer border border-outline-variant/30 transition-colors duration-200" for="toggle4">
+<div class="w-6 h-6 rounded-full bg-surface-variant absolute transform translate-x-0 transition-transform duration-200"></div>
+</label>
+</div>
+</div>
+</div>
+<div class="mt-12 space-y-4">
+<div class="font-label-tactical text-label-tactical text-text-muted uppercase tracking-widest opacity-60 px-2">
+                고급 진단
+            </div>
+<button class="w-full bg-surface-container/50 hover:bg-surface-container-high border border-outline-variant/50 p-4 flex items-center justify-between transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-text-muted group-hover:text-cyber-orange transition-colors">notifications_active</span>
+<span class="font-body-lg text-body-lg text-on-surface">테스트 전송</span>
+</div>
+<span class="material-symbols-outlined text-text-muted">chevron_right</span>
+</button>
+<button class="w-full bg-surface-container/50 hover:bg-surface-container-high border border-outline-variant/50 p-4 flex items-center justify-between transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-text-muted group-hover:text-cyber-orange transition-colors">history</span>
+<span class="font-body-lg text-body-lg text-on-surface">알림 히스토리 로그</span>
+</div>
+<span class="material-symbols-outlined text-text-muted">chevron_right</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-surface-container/90 text-cyber-orange Labels: font-label-tactical text-label-data font-headline-md text-on-surface fixed bottom-0 w-full z-50 rounded-t-xl backdrop-blur-xl border-t border-outline-variant/20 shadow-[0_-4px_20px_rgba(255,179,0,0.1)] hover:text-neon-purple transition-all active:scale-90 transition-transform duration-200 fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe md:hidden"><a class="flex flex-col items-center justify-center text-on-surface-variant p-2 group" href="#"><span class="material-symbols-outlined mb-1 group-hover:text-cyber-orange transition-colors">rss_feed</span><span class="font-label-tactical text-label-data group-hover:text-cyber-orange transition-colors">뉴스 피드</span></a><a class="flex flex-col items-center justify-center text-on-surface-variant p-2 group" href="#"><span class="material-symbols-outlined mb-1 group-hover:text-cyber-orange transition-colors">star</span><span class="font-label-tactical text-label-data group-hover:text-cyber-orange transition-colors">마이 픽</span></a><a class="flex flex-col items-center justify-center text-on-surface-variant p-2 group" href="#"><span class="material-symbols-outlined mb-1">home</span><span class="font-label-tactical text-label-data">홈</span></a><a class="flex flex-col items-center justify-center text-on-surface-variant p-2 group" href="#"><span class="material-symbols-outlined mb-1 group-hover:text-cyber-orange transition-colors">leaderboard</span><span class="font-label-tactical text-label-data group-hover:text-cyber-orange transition-colors">랭킹</span></a><a class="flex flex-col items-center justify-center text-cyber-orange p-2 group bg-primary-container text-on-primary-container rounded-lg shadow-[0_0_12px_rgba(255,215,0,0.4)] relative -top-2" href="#"><span class="material-symbols-outlined mb-1" style="font-variation-settings: &quot;FILL&quot; 1;">settings</span><span class="font-label-tactical text-label-data font-bold">설정</span></a></nav>
+
+
+</body></html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html><html class="dark" lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Global Tactical News Feed</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;family=Manrope:wght@400&amp;family=Space+Grotesk:ital,wght@0,600;0,700;1,700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#ffb693",
+                        "surface-bright": "#3a393a",
+                        "on-primary": "#283500",
+                        "secondary-fixed": "#f9d8ff",
+                        "on-secondary-container": "#332200",
+                        "background": "#131314",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-variant": "#353436",
+                        "primary": "#ffffff",
+                        "on-secondary": "#520070",
+                        "on-error": "#690005",
+                        "on-surface": "#e5e2e3",
+                        "surface-container-high": "#2a2a2b",
+                        "on-tertiary-fixed-variant": "#7a3000",
+                        "on-tertiary-container": "#aa4500",
+                        "on-secondary-fixed": "#320046",
+                        "surface-dim": "#131314",
+                        "primary-fixed": "#FFD700",
+                        "outline-variant": "#444933",
+                        "inverse-surface": "#e5e2e3",
+                        "surface-tint": "#FFD700",
+                        "primary-container": "#FFD700",
+                        "on-secondary-fixed-variant": "#75009e",
+                        "on-surface-variant": "#c4c9ac",
+                        "surface-container-low": "#1c1b1c",
+                        "on-tertiary": "#561f00",
+                        "on-primary-container": "#332b00",
+                        "tertiary": "#ffffff",
+                        "outline": "#8e9379",
+                        "on-primary-fixed": "#332b00",
+                        "tertiary-container": "#ffdbcc",
+                        "surface-container-lowest": "#0e0e0f",
+                        "secondary-container": "#FFB300",
+                        "secondary": "#ecb1ff",
+                        "primary-fixed-dim": "#E6C200",
+                        "inverse-primary": "#506600",
+                        "on-primary-fixed-variant": "#665600",
+                        "error": "#ffb4ab",
+                        "surface-container": "#201f20",
+                        "on-background": "#e5e2e3",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#351000",
+                        "secondary-fixed-dim": "#ecb1ff",
+                        "inverse-on-surface": "#313031",
+                        "surface": "#131314",
+                        "surface-container-highest": "#353436"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "grid-columns": "12",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "40px",
+                        "base": "4px",
+                        "gutter": "16px"
+                    },
+                    fontFamily: {
+                        "label-tactical": ["JetBrains Mono", "sans-serif"],
+                        "headline-md": ["Space Grotesk", "sans-serif"],
+                        "label-data": ["JetBrains Mono", "sans-serif"],
+                        "body-md": ["Manrope", "sans-serif"],
+                        "body-lg": ["Manrope", "sans-serif"],
+                        "headline-lg-mobile": ["Space Grotesk", "sans-serif"],
+                        "headline-xl": ["Space Grotesk", "sans-serif"],
+                        "headline-lg": ["Space Grotesk", "sans-serif"]
+                    },
+                    fontSize: {
+                        "label-tactical": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "label-data": ["10px", { "lineHeight": "1.0", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .grid-overlay {
+            background-image: 
+                linear-gradient(to right, rgba(255, 215, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .glitch-hover:hover {
+            transform: translate(2px, -2px);
+            box-shadow: -2px 2px 0px 0px theme('colors.primary-fixed');
+        }
+        .chamfer-br {
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+        }
+        .chamfer-tl {
+            clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px);
+        }
+        .neon-glow {
+            box-shadow: 0 0 8px 0 theme('colors.primary-fixed-dim');
+        }
+        .neon-glow-purple {
+            box-shadow: 0 0 8px 0 theme('colors.secondary-container');
+        }
+        
+        /* Loading Bar Animation */
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scan-line {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: theme('colors.primary-fixed');
+            animation: scanline 2s linear infinite;
+            opacity: 0.5;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen relative pb-32">
+<div class="fixed inset-0 grid-overlay pointer-events-none z-0"></div>
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-margin-mobile py-4 z-50 bg-surface dark:bg-surface border-b border-outline-variant/30 sticky top-0"><div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-fixed" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<h1 class="font-headline-md text-headline-md font-bold italic tracking-tighter text-primary-fixed">PIKY</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary hover:text-primary-fixed-dim transition-colors duration-200">search</span>
+<div class="w-8 h-8 rounded-full border border-primary-fixed/50 overflow-hidden">
+<span class="material-symbols-outlined text-primary-fixed flex items-center justify-center h-full w-full bg-surface-container-high">account_circle</span>
+</div>
+</div></header>
+<main class="relative z-10 px-margin-mobile py-2 max-w-2xl mx-auto flex flex-col gap-4">
+<!-- Navigation Tabs -->
+<div class="flex bg-surface-container-high rounded border border-outline-variant/30 p-1 mb-2"><button class="flex-1 py-1.5 font-label-tactical text-label-tactical text-on-primary-fixed bg-primary-fixed rounded-sm text-center chamfer-br transition-all">통합 소식</button><button class="flex-1 py-1.5 font-label-tactical text-label-tactical text-on-surface-variant text-center hover:text-primary transition-all">팝업&amp;행사</button></div>
+<!-- Section Header -->
+<!-- Updates List -->
+<div class="flex flex-col gap-4"><!-- Update Item 1: IMAGE_28 -->
+<div class="relative flex bg-surface-container/80 backdrop-blur-md border border-outline-variant/30 rounded-lg overflow-hidden glitch-hover transition-all cursor-pointer group h-32"><div class="relative w-32 h-full flex-shrink-0"><img alt="Tactical Boss Temple" class="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDijaPKl5_1ts6JDjCbUz-_4xa1AQ32-kMT93zcSRWGHT5xeQmLE7OLmTkfcb7woei0MH3Fp7tAukSkWXXlE-nOANYl6ls05oWpD_zadTOXKN_A1FKS_pcJriiyzUC2_yFACf0avUPfgBFQsqkNZbp-Uzf0zvSiMxHx8rYlUnB5vhMMOwuxtITyoGTW1Vw-SSpyL5VVEgqKf9KMLinCmitiUBrRg-LrDUKrolPSjHnT1_Nby6yx3vZxoVkLk6MuYpiiD0E"><div class="absolute top-2 left-2"><span class="bg-primary-fixed text-on-primary-fixed font-label-data text-[10px] px-2 py-0.5 rounded-sm uppercase font-bold">업데이트</span></div></div><div class="p-3 flex-1 flex flex-col justify-between"><div class="flex justify-between items-start"><span class="font-label-tactical text-[10px] text-primary-fixed tracking-wider">프로젝트: 섀도우</span><span class="font-label-data text-label-data text-on-surface-variant">10m</span></div><h3 class="font-headline-md text-[18px] text-primary leading-tight line-clamp-2">v2.4 패치 노트: 신규 전술 작전</h3><div class="flex justify-end"><span class="font-label-tactical text-[10px] text-primary-fixed flex items-center gap-1 uppercase">정보 <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span></div></div></div>
+<!-- Update Item 2: IMAGE_29 -->
+<div class="relative flex bg-surface-container/80 backdrop-blur-md border border-outline-variant/30 rounded-lg overflow-hidden glitch-hover transition-all cursor-pointer group h-32"><div class="relative w-32 h-full flex-shrink-0"><img alt="Lynae Character Card" class="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlDG3Afsq16arGH98KduizPyIfIF9WE93gM04qUcUNHbubs8ynLKi7pcHrT80kV2HZHK6T2OTwX_8PijcJEiiQalfxJ7-YjSeOk8Q5iCLHefmCioDqHH2ZA98Fpl3cfCwrLLf16CLm-HsGVTGZpEo0oDiJBtcwsahSCGUf-xHA-PEwEi4c2UDOE3vQApvDDSbziTBWl1EoifROh7tG16TDB_lW7E_EDbkv_8NMDsPHMfcEsGb6XzbgUq-WV7ZCvUIvBew"><div class="absolute top-2 left-2"><span class="bg-secondary-container text-on-secondary-container font-label-data text-[10px] px-2 py-0.5 rounded-sm uppercase font-bold">핫픽스</span></div></div><div class="p-3 flex-1 flex flex-col justify-between"><div class="flex justify-between items-start"><span class="font-label-tactical text-[10px] text-secondary-container tracking-wider">네온 신디케이트</span><span class="font-label-data text-label-data text-on-surface-variant">2h</span></div><h3 class="font-headline-md text-[18px] text-primary leading-tight line-clamp-2">북미 지역 서버 안정성 개선.</h3><div class="flex justify-end"><span class="font-label-tactical text-[10px] text-secondary-container flex items-center gap-1 uppercase">정보 <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span></div></div></div>
+<!-- Update Item 3: IMAGE_30 -->
+<div class="relative flex bg-surface-container/80 backdrop-blur-md border border-outline-variant/30 rounded-lg overflow-hidden glitch-hover transition-all cursor-pointer group h-32"><div class="relative w-32 h-full flex-shrink-0"><img alt="Lynae Vivian Card" class="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0z6YMQbNTlEUNbAObiFbD-4Lr7MuD3RQcqvvhyKh8LEmTvwxnpfrNC_eDPdUQ5y-1AZdPb9uer7i1Tdnwavd8Cv6EDeVdx9qNdV_JyZeKVG7WO3qMh6z0ve8saCohgMdU26_CX7mNEVI1bgVFSo37VCMsaTVsOnSKFrWPdghN9FGb4q5jt2MBuL2KDISUcvIx7esqGojuUQRiyebH9qQgtB9gw5iVR7DujIYjoiwc50C7y82COvcpKQHVgbIXBt1RVWc"><div class="absolute top-2 left-2"><span class="bg-primary-fixed text-on-primary-fixed font-label-data text-[10px] px-2 py-0.5 rounded-sm uppercase font-bold">업데이트</span></div></div><div class="p-3 flex-1 flex flex-col justify-between"><div class="flex justify-between items-start"><span class="font-label-tactical text-[10px] text-primary-fixed tracking-wider">그리드_러너</span><span class="font-label-data text-label-data text-on-surface-variant">5h</span></div><h3 class="font-headline-md text-[18px] text-primary leading-tight line-clamp-2">시즌 4 '사이버-스톰'이 시작되었습니다.</h3><div class="flex justify-end"><span class="font-label-tactical text-[10px] text-primary-fixed flex items-center gap-1 uppercase">정보 <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span></div></div></div><!-- Update Item 4 -->
+<div class="relative flex bg-surface-container/80 backdrop-blur-md border border-outline-variant/30 rounded-lg overflow-hidden glitch-hover transition-all cursor-pointer group h-32">
+<div class="relative w-32 h-full flex-shrink-0">
+<img alt="Tactical Gear" class="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDR30j5Jj9mWRurd6Riko-YWacNA7CQNyK71MdhXn9VISmvWXO8JKzl0kSpfD3x_BQ4tyoNL3ghZHdp74-mbFRM5FM9h-Lua3DxVGlASA8A3RJuhJUjNhEuBjNYIje90pFc408k3J2UVsofH8GKxAYkfkDB2LsvmNwlfJhSiVVdP0XLU8yZKqyHFh9C6f8rrKlCVWb6Hb57QHCd8P6THVMzWGc1oMhknt_W5ufHbS5ZTGoOmEeJ2EreA">
+<div class="absolute top-2 left-2"><span class="bg-primary-fixed text-on-primary-fixed font-label-data text-[10px] px-2 py-0.5 rounded-sm uppercase font-bold">업데이트</span></div>
+</div>
+<div class="p-3 flex-1 flex flex-col justify-between">
+<div class="flex justify-between items-start"><span class="font-label-tactical text-[10px] text-primary-fixed tracking-wider">오퍼레이션: 제로</span><span class="font-label-data text-label-data text-on-surface-variant">8h</span></div>
+<h3 class="font-headline-md text-[18px] text-primary leading-tight line-clamp-2">신규 전술 장비 'EMP 수류탄' 추가 안내</h3>
+<div class="flex justify-end"><span class="font-label-tactical text-[10px] text-primary-fixed flex items-center gap-1 uppercase">정보 <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span></div>
+</div>
+</div>
+<!-- Update Item 5 -->
+<div class="relative flex bg-surface-container/80 backdrop-blur-md border border-outline-variant/30 rounded-lg overflow-hidden glitch-hover transition-all cursor-pointer group h-32">
+<div class="relative w-32 h-full flex-shrink-0">
+<img alt="Cyber City" class="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlBoYQm6r2fYB7TkOtBNwQX-FVqwGN9-O7E1b9KkrjwV1Yc2l2IcRSmyw1sPevl40FSojDlpiWJ0Vkb6EOJjnGk4mBu2FWEazmTaGkR9R9KpOB_1PpQViKhkV5Ay9WyUZr0fRcIscMh0rygFk9b_sTSHu7vwUz7skF5igiUOzmdBlgcq_puEvoV81TrkaERGpT6PC4pOY_oOj7QkInMMyWsAfC-wC0AsT-W6xDBwyccu4Zojxnh7TRVg">
+<div class="absolute top-2 left-2"><span class="bg-secondary-container text-on-secondary-container font-label-data text-[10px] px-2 py-0.5 rounded-sm uppercase font-bold">핫픽스</span></div>
+</div>
+<div class="p-3 flex-1 flex flex-col justify-between">
+<div class="flex justify-between items-start"><span class="font-label-tactical text-[10px] text-secondary-container tracking-wider">네온 신디케이트</span><span class="font-label-data text-label-data text-on-surface-variant">12h</span></div>
+<h3 class="font-headline-md text-[18px] text-primary leading-tight line-clamp-2">도시 구역 텍스처 로딩 최적화 패치</h3>
+<div class="flex justify-end"><span class="font-label-tactical text-[10px] text-secondary-container flex items-center gap-1 uppercase">정보 <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span></div>
+</div>
+</div>
+<!-- Update Item 6 -->
+<div class="relative flex bg-surface-container/80 backdrop-blur-md border border-outline-variant/30 rounded-lg overflow-hidden glitch-hover transition-all cursor-pointer group h-32">
+<div class="relative w-32 h-full flex-shrink-0">
+<img alt="Data Core" class="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcwirutFsvn5h1eMoczHPaDeqC565HHTSC1INz3_CLKs-Ucm95QO3oJit3eNU9r5HQxdHHC6HVNttidE_tnPDhvP8e0IAKO9yYaMHzM0qY4qERfCY59w3w4owD_loH5289zcn_KyCg6d9X8dUKAX3_iTHPH_nraZlEuFfPXyM6VzN0-E2_KJkvKmfLrb_RXNkhcM375D_JXyQ06JQDQ_WfrKbyL7Aw1mUbRcmlLY5kDlY4cM6sv8omvg">
+<div class="absolute top-2 left-2"><span class="bg-primary-fixed text-on-primary-fixed font-label-data text-[10px] px-2 py-0.5 rounded-sm uppercase font-bold">업데이트</span></div>
+</div>
+<div class="p-3 flex-1 flex flex-col justify-between">
+<div class="flex justify-between items-start"><span class="font-label-tactical text-[10px] text-primary-fixed tracking-wider">데이터 뱅크</span><span class="font-label-data text-label-data text-on-surface-variant">1d</span></div>
+<h3 class="font-headline-md text-[18px] text-primary leading-tight line-clamp-2">보안 프로토콜 강화 및 보상 시스템 개편</h3>
+<div class="flex justify-end"><span class="font-label-tactical text-[10px] text-primary-fixed flex items-center gap-1 uppercase">정보 <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span></div>
+</div>
+</div></div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-6 pt-2 bg-surface-container-lowest/90 dark:bg-surface-container-lowest/90 backdrop-blur-md rounded-t-xl z-50 border-t border-outline-variant/50 shadow-[0_-4px_12px_rgba(255,215,0,0.1)]"><!-- 뉴스 피드 (Active) -->
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-lg px-3 py-1 shadow-[0_0_10px_rgba(255,215,0,0.4)] translate-y-[-2px] transition-transform duration-200 cursor-pointer">
+  <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">rss_feed</span>
+  <span class="font-label-data text-label-data">뉴스 피드</span>
+</div>
+<!-- 마이 픽 -->
+<div class="flex flex-col items-center justify-center text-text-muted opacity-70 hover:text-primary transition-all cursor-pointer">
+  <span class="material-symbols-outlined">sports_esports</span>
+  <span class="font-label-data text-label-data">마이 픽</span>
+</div>
+<!-- 홈 -->
+<div class="flex flex-col items-center justify-center text-text-muted opacity-70 hover:text-primary transition-all cursor-pointer">
+  <span class="material-symbols-outlined">grid_view</span>
+  <span class="font-label-data text-label-data">홈</span>
+</div>
+<!-- 랭킹 -->
+<div class="flex flex-col items-center justify-center text-text-muted opacity-70 hover:text-primary transition-all cursor-pointer">
+  <span class="material-symbols-outlined">leaderboard</span>
+  <span class="font-label-data text-label-data">랭킹</span>
+</div>
+<!-- 설정 -->
+<div class="flex flex-col items-center justify-center text-text-muted opacity-70 hover:text-primary transition-all cursor-pointer">
+  <span class="material-symbols-outlined">settings</span>
+  <span class="font-label-data text-label-data">설정</span>
+</div></nav>
+
+
+</body></html>

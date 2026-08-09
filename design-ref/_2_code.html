@@ -1,0 +1,295 @@
+<!DOCTYPE html><html class="dark" lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>피키 (PIKY) - 홈</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Manrope:wght@400;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#320046",
+                    "secondary-fixed": "#f9d8ff",
+                    "on-tertiary-fixed": "#281900",
+                    "surface-container-lowest": "#0e0e0f",
+                    "secondary-fixed-dim": "#ecb1ff",
+                    "tertiary-fixed": "#ffdeac",
+                    "on-tertiary-fixed-variant": "#604100",
+                    "cyber-orange": "#FFB300",
+                    "on-background": "#e5e2e3",
+                    "on-surface-variant": "#d0c6ab",
+                    "on-secondary-container": "#f0bbff",
+                    "outline-variant": "#444933",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary": "#520070",
+                    "neon-purple": "#D05BFF",
+                    "on-primary-fixed-variant": "#544600",
+                    "on-surface": "#e5e2e3",
+                    "surface": "#131314",
+                    "surface-container-high": "#2A2A2B",
+                    "secondary": "#ecb1ff",
+                    "on-primary-container": "#705e00",
+                    "surface-dim": "#131314",
+                    "surface-container": "#201F20",
+                    "primary-fixed-dim": "#e9c400",
+                    "on-tertiary": "#432c00",
+                    "surface-container-highest": "#353436",
+                    "surface-container-low": "#1c1b1c",
+                    "primary-fixed": "#ffe16d",
+                    "text-primary": "#E5E2E3",
+                    "on-secondary-fixed-variant": "#75009e",
+                    "primary": "#fff6df",
+                    "on-primary": "#3a3000",
+                    "error-container": "#93000a",
+                    "outline": "#999077",
+                    "tertiary": "#fff4ea",
+                    "tertiary-container": "#ffd38e",
+                    "neon-yellow": "#FFD700",
+                    "inverse-primary": "#705d00",
+                    "background": "#131314",
+                    "on-error": "#690005",
+                    "text-muted": "#C4C9AC",
+                    "error": "#ffb4ab",
+                    "inverse-surface": "#e5e2e3",
+                    "tertiary-fixed-dim": "#ffba38",
+                    "surface-bright": "#39393a",
+                    "primary-container": "#ffd700",
+                    "surface-variant": "#353436",
+                    "surface-tint": "#e9c400",
+                    "on-tertiary-container": "#7f5700",
+                    "inverse-on-surface": "#313031",
+                    "secondary-container": "#8e00bf",
+                    "on-primary-fixed": "#221b00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "margin-desktop": "40px",
+                    "margin-mobile": "20px",
+                    "base": "4px",
+                    "section-gap": "24px"
+            },
+            "fontFamily": {
+                    "label-tactical": ["JetBrains Mono"],
+                    "label-data": ["JetBrains Mono"],
+                    "headline-md": ["Space Grotesk"],
+                    "headline-lg": ["Space Grotesk"],
+                    "headline-lg-mobile": ["Space Grotesk"],
+                    "body-md": ["Manrope"],
+                    "headline-xl": ["Space Grotesk"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "label-tactical": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "500" }],
+                    "label-data": ["10px", { "lineHeight": "1.0", "fontWeight": "400" }],
+                    "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                    "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                    "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                    "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                    "headline-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #131314;
+            background-image: linear-gradient(rgba(255, 215, 0, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 215, 0, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* Tactical HUD Bracket Overlays */
+        .hud-bracket-tl {
+            position: absolute; top: 0; left: 0; width: 12px; height: 12px;
+            border-top: 2px solid #FFD700; border-left: 2px solid #FFD700;
+        }
+        .hud-bracket-tr {
+            position: absolute; top: 0; right: 0; width: 12px; height: 12px;
+            border-top: 2px solid #FFD700; border-right: 2px solid #FFD700;
+        }
+        .hud-bracket-bl {
+            position: absolute; bottom: 0; left: 0; width: 12px; height: 12px;
+            border-bottom: 2px solid #FFD700; border-left: 2px solid #FFD700;
+        }
+        .hud-bracket-br {
+            position: absolute; bottom: 0; right: 0; width: 12px; height: 12px;
+            border-bottom: 2px solid #FFD700; border-right: 2px solid #FFD700;
+        }
+
+        /* Chamfer cuts for cards */
+        .chamfer-card {
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+        }
+        .chamfer-btn {
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+
+        /* Glitch hover effect */
+        .glitch-hover:hover {
+            transform: translate(2px, -2px);
+            box-shadow: -2px 2px 0px rgba(208, 91, 255, 0.5);
+            transition: all 0.1s ease;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="text-on-surface antialiased overflow-x-hidden pt-14 pb-20">
+<!-- TopAppBar Component -->
+<header class="bg-surface/80 dark:bg-surface/80 fixed top-0 w-full backdrop-blur-md z-50 shadow-[0_0_15px_rgba(255,215,0,0.1)] flex items-center justify-between px-margin-mobile h-14 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-neon-yellow" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<h1 class="font-headline-md text-headline-md tracking-tighter text-neon-yellow">피키 (PIKY)</h1>
+</div>
+<div>
+<span class="material-symbols-outlined text-neon-yellow">notifications</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="px-margin-mobile py-6 flex flex-col gap-section-gap">
+<!-- Welcome Briefing Section -->
+<section class="relative bg-surface-container/80 border border-outline-variant p-4 flex gap-4 items-center rounded-lg">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-neon-yellow shrink-0 shadow-[0_0_10px_rgba(255,215,0,0.5)]">
+<img class="w-full h-full object-cover" data-alt="A futuristic cybernetic mascot character portrait, tactical gear, electric yellow accents, high detail, sharp lighting, neon punk style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3vtKwdbdPuTQz6pBi3a15O_PXpNlji2nfy7459wY7-xCEtWPDpzCyYPbeDYW1XYgjIMNbXFEYGoBCmqKZhYRX7bSsS2zt4XzxpIH3uFfxAcLRv7Ot6aNm9q1SqqmkL6YWJn8uaGB88QU2HrTBOclmZTG0-0ZqoBvPOqtnl_5FDb2Jf31EWCPXx0gN4PQcbixC-APMHrNFNu4HTvXwBqu9a7UPZlP15FlGNyHcc76mBMG3OBTy3bbQqw">
+</div>
+<div class="flex-1">
+<div class="font-label-tactical text-label-data text-neon-yellow mb-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">chat_bubble</span>
+                    피키 가이드
+                </div>
+<p class="font-body-md text-body-md text-on-surface">안녕! 오늘도 피키가 반가운 소식을 들고 왔어. 05.22 오늘 확인해야 할 업데이트가 3개나 있네? 지금 바로 확인해볼까?</p>
+</div>
+</section>
+<!-- Tactical Updates List -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<h2 class="font-headline-md text-headline-md text-text-primary">마이 픽업 소식</h2>
+<span class="font-label-tactical text-label-data text-text-muted">업데이트 완료</span>
+</div>
+<!-- Card 1: Nikke -->
+<article class="chamfer-card bg-surface-container-high/80 border border-outline-variant flex flex-col relative overflow-hidden glitch-hover cursor-pointer group">
+<!-- Top priority stripe -->
+<div class="absolute top-0 left-0 w-full h-1 bg-neon-yellow shadow-[0_0_5px_rgba(255,215,0,0.8)]"></div>
+<div class="flex flex-row p-3 gap-4">
+<!-- Image Area -->
+<div class="w-24 h-32 shrink-0 border border-outline-variant relative">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300" data-alt="A tactical sci-fi anime girl character holding a futuristic weapon, high contrast, gritty environment, cinematic lighting, cyberpunk aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOEfBIHDoPlAoRQ-8d2v8nLxfvrnHtkJZqb_07DbNdPtP6dSyNIWmuK42i4AaZONOvNRL_0T4ipARRYPtsk5JNn5hc4UJRzTpw9o8WFSEHjpykShJq-IdDpxcwwF9q9Q4UE9PqHAspMCsHhqMiSrHprQHd-P06D4pDqgTORI-9KFELEw1OOOCKSapTa5qLEnFOvpYFOFEdB75goQbYroDPNIwW6EUbL4R2EoOh2oeSRB2ZnIN_9lZIoQ">
+</div>
+<!-- Content Area -->
+<div class="flex-1 flex flex-col justify-between py-1">
+<div>
+<div class="font-label-tactical text-label-tactical text-neon-yellow mb-1">승리의 여신: 니케</div>
+<h3 class="font-headline-sm text-[16px] font-bold text-on-surface mb-2">v2.4 패치 노트</h3>
+<ul class="font-body-sm text-[12px] text-on-surface-variant space-y-1 list-none pl-1 border-l border-outline-variant">
+<li class="flex items-start gap-1"><span class="text-neon-yellow text-[10px] mt-0.5">▶</span> 신규 SSR 니케 '일렉' 합류</li>
+<li class="flex items-start gap-1"><span class="text-neon-yellow text-[10px] mt-0.5">▶</span> 'BOOM'S DAY' 스토리 이벤트 시작</li>
+<li class="flex items-start gap-1"><span class="text-neon-yellow text-[10px] mt-0.5">▶</span> 시스템 최적화 및 버그 수정</li>
+</ul>
+</div>
+<div class="flex justify-end mt-2">
+<div class="flex items-center gap-1 text-neon-yellow opacity-70 group-hover:opacity-100 transition-opacity">
+<span class="font-label-tactical text-label-data">소식 보기</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2: Blue Archive -->
+<article class="chamfer-card bg-surface-container-high/80 border border-outline-variant flex flex-col relative overflow-hidden glitch-hover cursor-pointer group">
+<div class="absolute top-0 left-0 w-full h-1 bg-neon-purple shadow-[0_0_5px_rgba(208,91,255,0.8)]"></div>
+<div class="flex flex-row p-3 gap-4">
+<div class="w-24 h-32 shrink-0 border border-outline-variant relative">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300" data-alt="A tactical anime schoolgirl character with a halo and assault rifle, blue sky background, clean bright lighting, modern tech-wear style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaG0zQoCQn0Vv3XCF_gMCmGAqfB09kUFS1DNIMt5Fum2u1RkBEgTtomgiVdIUkAgnPa1avdNhVR9jH-K60xYtKtqxB0d0zeQggs1IKRtjPYfnQepvHPOB6uxgPNPRaIH0tjEG82dkosB5_19FVOiOlOUTRt7M3gBhowzZO7CLF1gfc2YVzKQOzrJdSP6EFld4K1pb0nt_DJbK-A5w3UMXlvOjO8JnktgQs3yh5yToqBq6aIz0XvE1CEA">
+</div>
+<div class="flex-1 flex flex-col justify-between py-1">
+<div>
+<div class="font-label-tactical text-label-tactical text-neon-purple mb-1">블루 아카이브</div>
+<h3 class="font-headline-sm text-[16px] font-bold text-on-surface mb-2">신규 스쿼드 업데이트</h3>
+<ul class="font-body-sm text-[12px] text-on-surface-variant space-y-1 list-none pl-1 border-l border-outline-variant">
+<li class="flex items-start gap-1"><span class="text-neon-purple text-[10px] mt-0.5">▶</span> SRT 특수학원 래빗 소대 등장</li>
+<li class="flex items-start gap-1"><span class="text-neon-purple text-[10px] mt-0.5">▶</span> 최대 레벨 상한 85로 확장</li>
+<li class="flex items-start gap-1"><span class="text-neon-purple text-[10px] mt-0.5">▶</span> 전술 대항전 새 시즌 개막</li>
+</ul>
+</div>
+<div class="flex justify-end mt-2">
+<div class="flex items-center gap-1 text-neon-purple opacity-70 group-hover:opacity-100 transition-opacity">
+<span class="font-label-tactical text-label-data">소식 보기</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3: Genshin Impact -->
+<article class="chamfer-card bg-surface-container-high/80 border border-outline-variant flex flex-col relative overflow-hidden glitch-hover cursor-pointer group">
+<div class="absolute top-0 left-0 w-full h-1 bg-cyber-orange shadow-[0_0_5px_rgba(255,179,0,0.8)]"></div>
+<div class="flex flex-row p-3 gap-4">
+<div class="w-24 h-32 shrink-0 border border-outline-variant relative">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300" data-alt="A fantasy anime character in a sprawling lush open world environment, vibrant colors, magical glowing elements, cinematic epic scale." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgWojVS3fTNv8LyxfEZAq8mGqWTcEUyjhNaplOCn6H8fyS-Sa27dEHd9ekB43nGRITpa4n91pybG_i5zfA9DXRH7cwHloBO0vUKmEUAEQMPeG5cpOw9sFEvmbObzZbbMXSPUtOhfv8VccjwcXaTbwNFZUN50ItBAB9mIBNvXlL996A1HcEkaCMx5bmKiWXQHNh_otVF1pkKSr-5xg-vdcY2zl1bibhVrHgHdBjtr7SWWUIgnuIxyzF8A">
+</div>
+<div class="flex-1 flex flex-col justify-between py-1">
+<div>
+<div class="font-label-tactical text-label-tactical text-cyber-orange mb-1">원신 (GENSHIN)</div>
+<h3 class="font-headline-sm text-[16px] font-bold text-on-surface mb-2">4.5 버전 업데이트</h3>
+<ul class="font-body-sm text-[12px] text-on-surface-variant space-y-1 list-none pl-1 border-l border-outline-variant">
+<li class="flex items-start gap-1"><span class="text-cyber-orange text-[10px] mt-0.5">▶</span> 신규 5성 캐릭터 '치오리' 픽업</li>
+<li class="flex items-start gap-1"><span class="text-cyber-orange text-[10px] mt-0.5">▶</span> 연대 기원 배너 시스템 추가</li>
+<li class="flex items-start gap-1"><span class="text-cyber-orange text-[10px] mt-0.5">▶</span> 연금술 승급 이벤트 진행 중</li>
+</ul>
+</div>
+<div class="flex justify-end mt-2">
+<div class="flex items-center gap-1 text-cyber-orange opacity-70 group-hover:opacity-100 transition-opacity">
+<span class="font-label-tactical text-label-data">소식 보기</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+</section>
+</main>
+<!-- BottomNavBar Component -->
+<nav class="bg-surface-container/90 dark:bg-surface-container/90 fixed bottom-0 w-full z-50 rounded-t-xl backdrop-blur-xl shadow-[0_-4px_12px_rgba(0,0,0,0.5)] flex justify-around items-center h-16 px-gutter border-t border-outline-variant"><!-- 뉴스 피드 (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:opacity-100 hover:text-neon-yellow active:translate-y-0.5 transition-all w-16">
+  <span class="material-symbols-outlined text-[24px]">rss_feed</span>
+  <span class="font-label-tactical text-label-tactical mt-1">뉴스 피드</span>
+</button>
+<!-- 마이 픽 (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:opacity-100 hover:text-neon-yellow active:translate-y-0.5 transition-all w-16">
+  <span class="material-symbols-outlined text-[24px]">star</span>
+  <span class="font-label-tactical text-label-tactical mt-1">마이 픽</span>
+</button>
+<!-- 홈 (Active) -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-lg py-1 px-3 shadow-[0_0_10px_#FFD700] hover:opacity-100 hover:text-neon-yellow active:translate-y-0.5 transition-all -translate-y-2 border border-[#FFD700]">
+  <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">home</span>
+  <span class="font-label-tactical text-label-tactical mt-1 font-bold">홈</span>
+</button>
+<!-- 랭킹 (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:opacity-100 hover:text-neon-yellow active:translate-y-0.5 transition-all w-16">
+  <span class="material-symbols-outlined text-[24px]">leaderboard</span>
+  <span class="font-label-tactical text-label-tactical mt-1">랭킹</span>
+</button>
+<!-- 설정 (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 hover:opacity-100 hover:text-neon-yellow active:translate-y-0.5 transition-all w-16">
+  <span class="material-symbols-outlined text-[24px]">settings</span>
+  <span class="font-label-tactical text-label-tactical mt-1">설정</span>
+</button></nav>
+
+
+</body></html>

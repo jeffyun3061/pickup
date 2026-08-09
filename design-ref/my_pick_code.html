@@ -1,0 +1,313 @@
+<!DOCTYPE html><html class="dark" lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>지휘소 - 게임 관리</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Manrope:wght@400;500;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#E6C200",
+                        "secondary": "#ecb1ff",
+                        "on-tertiary-container": "#aa4500",
+                        "surface-bright": "#3a393a",
+                        "on-primary-fixed-variant": "#3c4d00",
+                        "error": "#ffb4ab",
+                        "surface": "#131314",
+                        "on-secondary-fixed-variant": "#75009e",
+                        "background": "#131314",
+                        "primary-container": "#FFD700",
+                        "surface-dim": "#131314",
+                        "on-surface": "#e5e2e3",
+                        "on-secondary-fixed": "#320046",
+                        "primary-fixed": "#FFD700",
+                        "surface-container-high": "#2a2a2b",
+                        "inverse-surface": "#e5e2e3",
+                        "on-tertiary": "#561f00",
+                        "tertiary": "#ffffff",
+                        "on-surface-variant": "#c4c9ac",
+                        "secondary-container": "#d05bff",
+                        "on-error-container": "#ffdad6",
+                        "primary": "#ffffff",
+                        "surface-container-highest": "#353436",
+                        "surface-container-low": "#1c1b1c",
+                        "on-primary-fixed": "#161e00",
+                        "on-background": "#e5e2e3",
+                        "secondary-fixed-dim": "#ecb1ff",
+                        "inverse-on-surface": "#313031",
+                        "outline-variant": "#444933",
+                        "on-tertiary-fixed-variant": "#7a3000",
+                        "on-primary": "#283500",
+                        "surface-variant": "#353436",
+                        "tertiary-container": "#ffdbcc",
+                        "on-secondary": "#520070",
+                        "secondary-fixed": "#f9d8ff",
+                        "inverse-primary": "#506600",
+                        "surface-tint": "#FFD700",
+                        "on-secondary-container": "#480063",
+                        "on-tertiary-fixed": "#351000",
+                        "on-primary-container": "#556d00",
+                        "tertiary-fixed": "#ffdbcc",
+                        "tertiary-fixed-dim": "#ffb693",
+                        "on-error": "#690005",
+                        "surface-container": "#201f20",
+                        "surface-container-lowest": "#0e0e0f",
+                        "outline": "#8e9379"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "base": "4px",
+                        "margin-mobile": "20px",
+                        "grid-columns": "12",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "body-lg": ["Manrope"],
+                        "headline-lg": ["Space Grotesk"],
+                        "label-data": ["JetBrains Mono"],
+                        "label-tactical": ["JetBrains Mono"],
+                        "headline-md": ["Space Grotesk"],
+                        "headline-xl": ["Space Grotesk"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-data": ["10px", { "lineHeight": "1.0", "fontWeight": "400" }],
+                        "label-tactical": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Tech-Noir Utilities */
+        body {
+            background-color: #131314;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        
+        .glitch-hover:hover {
+            transform: translate(2px, -2px);
+            text-shadow: 2px 0 #FFD700, -2px 0 #d05bff;
+        }
+
+        .tactical-border {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .squad-card {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .squad-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 20px -10px rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+            z-index: 10;
+        }
+        .squad-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, transparent 50%, rgba(19, 19, 20, 0.9) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            animation: scanline 4s linear infinite;
+            z-index: 2;
+            pointer-events: none;
+        }
+        @keyframes scanline {
+            0% { transform: translateY(-100%); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(1000%); opacity: 0; }
+        }
+        
+        /* Pagination Snap */
+        .snap-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .snap-container > section {
+            flex-shrink: 0;
+            width: 100%;
+            scroll-snap-align: start;
+        }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 z-50 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center tactical-border overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"><img alt="사용자 프로필" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApXMQ0UIwqof0e11gzDLQTJ_NSJhKKZQPEJhwUIU2MoPXk1XpfKRLydQepg4N5-tcIWhhSJZ7OmPiWwt3HU1iSE0FU6Q3vwEMHI1kIhO3XRgnhQBbF68jFYIPnSlvxpAwafgUZSRAlinoJ2E12-0YstSB8cgoWMI6aHGyfd_y0nUX-_M4aH2bW1WtT-JlfZOqNT8E6RTE7Q2RBRTp-m6JcDUCrKeXIQ7L6fsdAEJEXigY9IH10ZkvTF0CBkmnXzZvW4Zs"></div><h1 class="font-headline-md text-headline-md font-bold tracking-tighter text-primary-fixed">마이픽</h1></div><button class="text-on-surface-variant hover:text-primary-fixed-dim transition-colors duration-200"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span></button></header>
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto flex flex-col h-full pt-20">
+<!-- Header Section -->
+<section class="px-margin-mobile md:px-margin-desktop space-y-2 mb-4">
+<div class="flex justify-between items-end border-b border-outline-variant/30 pb-4">
+<div>
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tighter uppercase glitch-hover transition-all cursor-default">마이픽</h2>
+<p class="font-label-tactical text-label-tactical text-on-surface-variant mt-2">피키가 관리하는 내 게임들</p>
+</div>
+</div>
+</section>
+<!-- Paginated Grid System -->
+<div class="snap-container hide-scrollbar min-h-[500px] h-[calc(100vh-320px)]">
+<!-- Page 1: Current 4 Units -->
+<section class="px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-2 grid-rows-2 h-full gap-4 md:gap-6">
+<!-- Nikke -->
+<a class="squad-card rounded-lg overflow-hidden tactical-border flex flex-col justify-end group cursor-pointer bg-surface-container-high relative" href="#">
+<img alt="니케 히어로 이미지" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQTp60sgsTtrChc-v2Da1zGJumqi-0z9-LABM8NHrh7_wxOlIzig-H53L1oBxEgJKZWkaPe7HktLynu_A_Y7G-Ht8psg5_lSVCMQh_0gXpoTZuD3AlDhnbJUYjU0tEvMbAsPMVSZYYcAZEmkbtYcEXxlJofJo5WOfvDyrvLExB5j3Z2WbGTLaJiKajjY-nkM_PFh_baf2sVsnlQHYe9jfxQry6KbXQph0MHAMeVvW04FdtWFkkIFLFYA">
+<div class="scanline"></div>
+<div class="absolute top-3 right-3 z-10 flex gap-2">
+<span class="bg-primary-fixed text-on-primary-fixed border border-primary-fixed font-label-data text-label-data px-3 py-1.5 rounded backdrop-blur-sm shadow-[0_0_12px_rgba(255,215,0,0.8)] font-bold animate-pulse">새로운 소식</span>
+</div>
+<div class="relative z-10 border-t border-outline-variant/30 backdrop-blur-sm bg-surface/30 p-3">
+<h3 class="font-headline-md text-[18px] md:text-headline-md text-primary truncate mb-1">니케</h3>
+<p class="font-label-tactical text-[10px] md:text-label-tactical text-error font-bold flex items-center gap-1 w-max bg-error/20 px-2 py-0.5 rounded shadow-[0_0_8px_rgba(255,180,171,0.5)] border border-error/50"><span class="material-symbols-outlined text-[14px]">warning</span> 1 확인 필요</p>
+</div>
+</a>
+<!-- Blue Archive -->
+<a class="squad-card rounded-lg overflow-hidden tactical-border flex flex-col justify-end group cursor-pointer bg-surface-container-high relative" href="#">
+<img alt="블루 아카이브 히어로 이미지" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIMRNMI4dJypQmYsxAn2FiXECwSI4g_UvJGUvRmkPjlQ7uLrdhjkdDOXxwKhQW0I37zqARZTjaxyX42BYvko8d-HA4Vo98nQJwa53bVFMJnfnIbnrX-0th13ZHe3JSNx7paN1XYO0OmsX5iO2NWxdtf3Jnx-yac4uj4hv_3I5XsjaALrwqp_xQiQ8xEPuQZ4X74rFHyOTRnR7LRUro37X_EyjHGQV0eLv8RA9hVYtngJoVzjBm6Bxk0A">
+<div class="scanline" style="animation-delay: 1s;"></div>
+<div class="absolute top-3 right-3 z-10">
+<span class="bg-secondary text-on-secondary border border-secondary font-label-data text-label-data px-3 py-1.5 rounded backdrop-blur-sm shadow-[0_0_12px_rgba(208,91,255,0.8)] font-bold animate-pulse">3 알림</span>
+</div>
+<div class="relative z-10 border-t border-outline-variant/30 backdrop-blur-sm bg-surface/30 p-3">
+<h3 class="font-headline-md text-[18px] md:text-headline-md text-primary truncate mb-1">블루 아카이브</h3>
+<p class="font-label-tactical text-[10px] md:text-label-tactical text-on-surface-variant flex items-center gap-1">피키가 관리하는 내 게임들</p>
+</div>
+</a>
+<!-- Genshin Impact -->
+<a class="squad-card rounded-lg overflow-hidden tactical-border flex flex-col justify-end group cursor-pointer bg-surface-container-high relative" href="#">
+<img alt="원신 히어로 이미지" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVK2MY3V3FNFO_82PIRSLVvc0Hfy1GrMJx889loy9BwGmlSn6NmNBZTvCXUhcuj2omN7DVynTtEh-WunJgwKLPOYqrhxfz7dGBUavrwH5JPuAd1mRw3fx2XxmTE_Vh1oXn-4h2LvvmKFbqOLoqeFz6JhvyHP4h9E_7vOTG5xXOBMQamYCP_Q5nMVNatNwAQnnUASlMF4PtIk8SuaV8rkv89d5je9_l2LIPfIWY1JVWCZwfT-_M3So8UA">
+<div class="relative z-10 border-t border-outline-variant/30 backdrop-blur-sm bg-surface/30 p-3">
+<h3 class="font-headline-md text-[18px] md:text-headline-md text-primary truncate mb-1">원신</h3>
+<p class="font-label-tactical text-[10px] md:text-label-tactical text-on-surface-variant flex items-center gap-1">피키가 관리하는 내 게임들</p>
+</div>
+</a>
+<!-- Slot 4: Empty -->
+<button class="relative rounded-lg tactical-border flex flex-col items-center justify-center group cursor-pointer bg-surface-container/30 border-dashed border-2 hover:border-primary-fixed/50 transition-all">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary-fixed group-hover:bg-primary-fixed/10 transition-all mb-2">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary-fixed">add</span>
+</div>
+<h3 class="font-label-tactical text-[12px] text-on-surface-variant group-hover:text-primary">게임 등록</h3>
+</button>
+</div>
+</section>
+<!-- Page 2: Empty Slots -->
+<section class="px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-2 grid-rows-2 h-full gap-4 md:gap-6">
+<button class="relative rounded-lg tactical-border flex flex-col items-center justify-center group cursor-pointer bg-surface-container/30 border-dashed border-2 hover:border-primary-fixed/50 transition-all">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary-fixed transition-all mb-2">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary-fixed">add</span>
+</div>
+<h3 class="font-label-tactical text-[12px] text-on-surface-variant group-hover:text-primary">게임 등록</h3>
+</button>
+<button class="relative rounded-lg tactical-border flex flex-col items-center justify-center group cursor-pointer bg-surface-container/30 border-dashed border-2 hover:border-primary-fixed/50 transition-all">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary-fixed transition-all mb-2">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary-fixed">add</span>
+</div>
+<h3 class="font-label-tactical text-[12px] text-on-surface-variant group-hover:text-primary">게임 등록</h3>
+</button>
+<button class="relative rounded-lg tactical-border flex flex-col items-center justify-center group cursor-pointer bg-surface-container/30 border-dashed border-2 hover:border-primary-fixed/50 transition-all">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary-fixed transition-all mb-2">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary-fixed">add</span>
+</div>
+<h3 class="font-label-tactical text-[12px] text-on-surface-variant group-hover:text-primary">게임 등록</h3>
+</button>
+<button class="relative rounded-lg tactical-border flex flex-col items-center justify-center group cursor-pointer bg-surface-container/30 border-dashed border-2 hover:border-primary-fixed/50 transition-all">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary-fixed transition-all mb-2">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary-fixed">add</span>
+</div>
+<h3 class="font-label-tactical text-[12px] text-on-surface-variant group-hover:text-primary">게임 등록</h3>
+</button>
+</div>
+</section>
+<!-- Page 3: Empty Slots -->
+<section class="px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-2 grid-rows-2 h-full gap-4 md:gap-6">
+<button class="relative rounded-lg tactical-border flex flex-col items-center justify-center group cursor-pointer bg-surface-container/30 border-dashed border-2 hover:border-primary-fixed/50 transition-all">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary-fixed transition-all mb-2">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary-fixed">add</span>
+</div>
+<h3 class="font-label-tactical text-[12px] text-on-surface-variant group-hover:text-primary">게임 등록</h3>
+</button>
+<button class="relative rounded-lg tactical-border flex flex-col items-center justify-center group cursor-pointer bg-surface-container/30 border-dashed border-2 hover:border-primary-fixed/50 transition-all">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary-fixed transition-all mb-2">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary-fixed">add</span>
+</div>
+<h3 class="font-label-tactical text-[12px] text-on-surface-variant group-hover:text-primary">게임 등록</h3>
+</button>
+<button class="relative rounded-lg tactical-border flex flex-col items-center justify-center group cursor-pointer bg-surface-container/30 border-dashed border-2 hover:border-primary-fixed/50 transition-all">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary-fixed transition-all mb-2">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary-fixed">add</span>
+</div>
+<h3 class="font-label-tactical text-[12px] text-on-surface-variant group-hover:text-primary">게임 등록</h3>
+</button>
+<button class="relative rounded-lg tactical-border flex flex-col items-center justify-center group cursor-pointer bg-surface-container/30 border-dashed border-2 hover:border-primary-fixed/50 transition-all">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary-fixed transition-all mb-2">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary-fixed">add</span>
+</div>
+<h3 class="font-label-tactical text-[12px] text-on-surface-variant group-hover:text-primary">게임 등록</h3>
+</button>
+</div>
+</section>
+</div>
+<!-- Pagination Indicators -->
+<div class="flex justify-center items-center gap-3 mt-8">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-fixed shadow-[0_0_8px_rgba(255,215,0,0.6)]"></div>
+<div class="w-2 h-2 rounded-full bg-surface-container-highest border border-outline-variant/30"></div>
+<div class="w-2 h-2 rounded-full bg-surface-container-highest border border-outline-variant/30"></div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface-container border-t border-outline-variant/50 shadow-[0_-4px_10px_rgba(255,215,0,0.1)] rounded-t-xl md:hidden"><div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer"><span class="material-symbols-outlined">grid_view</span><span class="font-label-tactical text-[10px] mt-1">뉴스 피드</span></div><div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-lg px-4 py-1 ring-1 ring-primary-fixed-dim translate-y-[-4px] shadow-[0_0_12px_rgba(255,215,0,0.4)] transition-transform duration-150"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">target</span><span class="font-label-tactical text-[10px] mt-1 font-bold">마이 픽</span></div><div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer"><span class="material-symbols-outlined">home</span><span class="font-label-tactical text-[10px] mt-1">홈</span></div><div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer"><span class="material-symbols-outlined">description</span><span class="font-label-tactical text-[10px] mt-1">랭킹</span></div><div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer"><span class="material-symbols-outlined">settings</span><span class="font-label-tactical text-[10px] mt-1">설정</span></div></nav>
+
+
+
+
+</body></html>

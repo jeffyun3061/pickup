@@ -1,0 +1,352 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Ranking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Manrope:wght@400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "secondary-fixed": "#f9d8ff",
+                "surface-variant": "#353436",
+                "inverse-primary": "#506600",
+                "surface-container-low": "#1c1b1c",
+                "secondary-container": "#d05bff",
+                "on-secondary-fixed": "#320046",
+                "tertiary-container": "#ffdbcc",
+                "background": "#131314",
+                "surface-container-high": "#2a2a2b",
+                "on-tertiary-fixed": "#351000",
+                "on-secondary-container": "#480063",
+                "on-primary-fixed-variant": "#3c4d00",
+                "on-surface": "#e5e2e3",
+                "error-container": "#93000a",
+                "on-error-container": "#ffdad6",
+                "on-background": "#e5e2e3",
+                "secondary": "#ecb1ff",
+                "primary-fixed": "#FFD700",
+                "surface-tint": "#FFD700",
+                "on-primary-container": "#556d00",
+                "on-secondary-fixed-variant": "#75009e",
+                "error": "#ffb4ab",
+                "on-primary-fixed": "#161e00",
+                "surface": "#131314",
+                "on-tertiary": "#561f00",
+                "on-secondary": "#520070",
+                "inverse-surface": "#e5e2e3",
+                "surface-container": "#201f20",
+                "primary-fixed-dim": "#E6C200",
+                "surface-container-highest": "#353436",
+                "outline": "#8e9379",
+                "outline-variant": "#444933",
+                "tertiary-fixed": "#ffdbcc",
+                "secondary-fixed-dim": "#ecb1ff",
+                "primary": "#ffffff",
+                "on-tertiary-fixed-variant": "#7a3000",
+                "inverse-on-surface": "#313031",
+                "surface-dim": "#131314",
+                "surface-container-lowest": "#0e0e0f",
+                "on-tertiary-container": "#aa4500",
+                "on-surface-variant": "#c4c9ac",
+                "on-primary": "#283500",
+                "tertiary": "#ffffff",
+                "surface-bright": "#3a393a",
+                "on-error": "#690005",
+                "tertiary-fixed-dim": "#ffb693",
+                "primary-container": "#FFD700"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "grid-columns": "12",
+                "margin-mobile": "20px",
+                "gutter": "16px",
+                "margin-desktop": "40px",
+                "base": "4px"
+        },
+        "fontFamily": {
+                "headline-lg": [
+                        "Space Grotesk"
+                ],
+                "headline-lg-mobile": [
+                        "Space Grotesk"
+                ],
+                "headline-md": [
+                        "Space Grotesk"
+                ],
+                "headline-xl": [
+                        "Space Grotesk"
+                ],
+                "label-data": [
+                        "JetBrains Mono"
+                ],
+                "body-md": [
+                        "Manrope"
+                ],
+                "body-lg": [
+                        "Manrope"
+                ],
+                "label-tactical": [
+                        "JetBrains Mono"
+                ]
+        },
+        "fontSize": {
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "1.2",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "28px",
+                        {
+                                "lineHeight": "1.2",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "1.2",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-xl": [
+                        "48px",
+                        {
+                                "lineHeight": "1.1",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-data": [
+                        "10px",
+                        {
+                                "lineHeight": "1.0",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "1.5",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-tactical": [
+                        "12px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "0.1em",
+                                "fontWeight": "500"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        .clip-chamfer { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%); }
+        .clip-chamfer-reverse { clip-path: polygon(0 0, 100% 0, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
+        
+        .neon-glow-primary { box-shadow: 0 0 10px rgba(255, 215, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.2); }
+        .neon-glow-secondary { box-shadow: 0 0 10px rgba(208, 91, 255, 0.4), 0 0 20px rgba(208, 91, 255, 0.2); }
+        .neon-glow-tertiary { box-shadow: 0 0 10px rgba(255, 219, 204, 0.4), 0 0 20px rgba(255, 219, 204, 0.2); }
+
+        .bg-grid-pattern {
+            background-size: 20px 20px;
+            background-image: linear-gradient(to right, rgba(255, 215, 0, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+        }
+        
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(32, 31, 32, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Glitch Animation */
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 1px) }
+            40% { transform: translate(-1px, -1px) }
+            60% { transform: translate(2px, 1px) }
+            80% { transform: translate(1px, -1px) }
+            100% { transform: translate(0) }
+        }
+        .glitch-hover:hover { animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen relative overflow-x-hidden pb-24">
+<!-- Background Grid -->
+<div class="fixed inset-0 pointer-events-none z-0">
+<div class="absolute inset-0 bg-grid-pattern"></div>
+<div class="absolute inset-0 bg-gradient-to-b from-surface via-transparent to-surface"></div>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 flex justify-between items-center w-full px-margin-mobile py-4 z-50 bg-surface border-b border-outline-variant/30"><div class="flex items-center gap-2"><span class="font-headline-md text-primary-fixed font-bold tracking-tighter">PIKY</span></div><div class="flex items-center gap-3"><span class="material-symbols-outlined text-on-surface-variant hover:text-primary-fixed-dim transition-colors duration-200 cursor-pointer">account_circle</span></div></header>
+<!-- Main Content Canvas -->
+<main class="relative z-10 px-margin-mobile pt-4">
+<!-- Header Section -->
+<div class="mb-16 text-center relative pt-8"><div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-8 bg-gradient-to-b from-primary-fixed to-transparent opacity-50"></div><h2 class="font-headline-xl text-headline-xl text-primary uppercase tracking-tighter relative inline-block mb-2">오늘의 PICK<div class="absolute -bottom-2 left-0 w-full h-[2px] bg-primary-fixed neon-glow-primary"></div><div class="absolute -top-2 right-0 w-8 h-[1px] bg-primary-fixed/50"></div></h2><div class="mt-4 font-label-tactical text-label-tactical text-outline flex justify-center items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-fixed animate-pulse neon-glow-primary"></span>실시간 데일리 랭킹</div><div class="mt-4 flex justify-center gap-1"><div class="w-12 h-[1px] bg-outline-variant/30"></div><div class="w-2 h-[1px] bg-primary-fixed"></div><div class="w-12 h-[1px] bg-outline-variant/30"></div></div></div>
+<!-- 3D Podium Section -->
+<div class="relative h-[240px] mb-8 flex justify-center items-end">
+<!-- Rank 2 -->
+<div class="absolute left-4 bottom-4 flex flex-col items-center w-[90px] z-20 transform -translate-x-4">
+<div class="relative w-14 h-14 rounded-full border-2 border-secondary-container neon-glow-secondary mb-2 overflow-hidden glass-panel">
+<img class="w-full h-full object-cover grayscale opacity-80 mix-blend-luminosity hover:grayscale-0 transition-all duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKNpwQiPY3oR5v_zPdX8Ebat_tXEVKHc2BaZNUI3p14oEydEo5pxzR1bC5FCczcEs3HoTAe_8N7dSBX7Dwks9T0Wx4D2gB51CYRUZMRp-45LM64plQIA-V99W8bLcB8-u3oeNvTboAwP3hSETHfRNBi4KQ6JH_Eg6ym46I0U4kFMPtp9bIG2eUEDNqeP7xYZfD2ouYKNN208UpYIeV-3Fg4I4AFGeQ-StPs5t_Y-AMB3EdvujTFkEQuQ">
+<div class="absolute inset-0 bg-secondary-container/20 mix-blend-overlay"></div>
+</div>
+<div class="font-headline-md text-headline-md text-secondary font-bold">2</div>
+<div class="w-full h-[60px] bg-gradient-to-t from-surface-container-highest to-surface border-t border-secondary-container clip-chamfer flex flex-col items-center justify-start pt-1">
+<span class="font-label-tactical text-label-tactical text-on-surface">NEON DRIFT</span>
+<span class="font-label-data text-label-data text-primary-fixed">9,420 경험치</span>
+</div>
+</div>
+<!-- Rank 1 (Center) -->
+<div class="absolute left-1/2 -translate-x-1/2 bottom-8 flex flex-col items-center w-[110px] z-30">
+<div class="relative">
+<span class="material-symbols-outlined absolute -top-6 left-1/2 -translate-x-1/2 text-primary-fixed neon-glow-primary text-[24px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<div class="w-16 h-16 rounded-full border-2 border-primary-fixed neon-glow-primary mb-2 overflow-hidden glass-panel relative z-10">
+<img class="w-full h-full object-cover grayscale-0 mix-blend-luminosity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPxFXFEDXWsLK5QNHWBWnw93D6CQ5oup_xSTCBUrm6MJ6VHNIy4RtHrLWBjBAsSnn0bCG_77Ci36s_kq9ARlJh9yensOeH6DOrPsWqlsAvXHDoDeHFfbDyuVhfOt2LF-13TJIANAHESC0OML8cAVWsqmgA0wZjq-mDK7eeUe5KScu5ttE6l3RRzAOvdAy892FEQIWl8YtmZI_14jZLFMKH6qfKvA9ywan2bDFeeMCDr3K-wCFaNx9Sjw">
+<div class="absolute inset-0 bg-primary-fixed/10 mix-blend-overlay"></div>
+</div>
+</div>
+<div class="font-headline-lg-mobile text-headline-lg-mobile text-primary-fixed font-bold">1</div>
+<div class="w-full h-[90px] bg-gradient-to-t from-surface-container-highest to-surface border-t-2 border-primary-fixed clip-chamfer flex flex-col items-center justify-start pt-2">
+<span class="font-label-tactical text-label-tactical text-on-surface font-bold">VOID RUNNER</span>
+<span class="font-label-data text-label-data text-primary-fixed">12,850 경험치</span>
+</div>
+</div>
+<!-- Rank 3 -->
+<div class="absolute right-4 bottom-2 flex flex-col items-center w-[90px] z-10 transform translate-x-4">
+<div class="w-12 h-12 rounded-full border-2 border-tertiary-container neon-glow-tertiary mb-2 overflow-hidden glass-panel relative">
+<img class="w-full h-full object-cover grayscale opacity-60 mix-blend-luminosity hover:grayscale-0 transition-all duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5EsvUPvq9K0-4wk_kPCNiLHt8V8EqEPjYeeYv6ckN1XcQg_JzX3ifQibSPY7ucr0n4Kpc_FaPur2rZxyIq73BxLW9JHx1dKSLJhV-80zP4IBQxjQY9b4JEtQf7bBSWilI-xEMPj8m7u1qlXK2BEt5WJt2ZJNm-S5ZxxOIhA6LCZ9Xlz9H1e55jYzI2e6ftZYlXWWu4u2mL-ALgDKOrTugf2-a4MChmaDMcd5b0hZVO9muOopARRT-eA">
+<div class="absolute inset-0 bg-tertiary-container/20 mix-blend-overlay"></div>
+</div>
+<div class="font-headline-md text-headline-md text-tertiary font-bold">3</div>
+<div class="w-full h-[50px] bg-gradient-to-t from-surface-container-highest to-surface border-t border-tertiary-container clip-chamfer-reverse flex flex-col items-center justify-start pt-1">
+<span class="font-label-tactical text-label-tactical text-on-surface">CYBER OPS</span>
+<span class="font-label-data text-label-data text-primary-fixed">8,100 경험치</span>
+</div>
+</div>
+</div>
+<!-- Staircase Progression (Ranks 4-10) -->
+<div class="flex flex-col gap-3 pb-8"><!-- Rank 4 -->
+<div class="glass-panel clip-chamfer flex items-center p-2 transform transition-transform hover:scale-[1.02] cursor-pointer ml-0 mr-0 border-l-2 border-outline-variant">
+<div class="w-8 font-headline-md text-headline-md text-primary-fixed font-bold text-center">4</div>
+<div class="w-8 h-8 rounded border border-outline-variant overflow-hidden mx-3">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCJfV8TgiiVexSaRj0unkicfNnskObjFbL_1Xpx_LrnVlO8IPgot7894T2-U5Mznc5MLbNWViLco2-P1nOoFubEnE4VMptw8_BIAexmUsiW1cPVzKQfr53RF_4CoweZNwkHN821Y7UKw0bcREYrxUqG-gC2W5wCU1ExTnnrsESHwR0Jpa-l12R6z02eRUFWtf-Dfy1A2QZVlONg_lFDiWG2OyrpuxioITY-eVY3FYtIedxfWpZwvB7GQ">
+</div>
+<div class="flex-grow">
+<div class="font-label-tactical text-label-tactical text-on-surface">GRID CLASH</div>
+<div class="font-label-data text-label-data text-primary-fixed">7,540 경험치</div>
+</div>
+<div class="flex flex-col items-end pr-2">
+<span class="material-symbols-outlined text-primary-fixed text-[16px]">trending_up</span>
+</div>
+</div>
+<!-- Rank 5 -->
+<div class="glass-panel clip-chamfer flex items-center p-2 transform transition-transform hover:scale-[1.02] cursor-pointer ml-0 mr-0 border-l-2 border-outline-variant">
+<div class="w-8 font-headline-md text-headline-md text-primary-fixed font-bold text-center">5</div>
+<div class="w-8 h-8 rounded border border-outline-variant overflow-hidden mx-3">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeLRB3g2jYpkUSOQKZH9sgQcwRKJxNtFwFCEbAcXmLn8DfplXkuUluh3RSFo5u1F40pG5IBXqfU4tiq-6qbJZHIMnViQB_pQYwUQ7q1EkCxbx_NQ3fcQdI-O_m62hP_8STnm11R-aYrJEzdRzJhPz6cV-2EYCekRbu9J8rqUE6KI1sf9wDi5uTZzY5Ri4JgSxBqTIeIWIzTxcjZ-yt64YmI-mOpeYovwjrJA5TxHfSR6fLRL6uic2uqA">
+</div>
+<div class="flex-grow">
+<div class="font-label-tactical text-label-tactical text-on-surface">SYNTH WARS</div>
+<div class="font-label-data text-label-data text-primary-fixed">7,200 경험치</div>
+</div>
+<div class="flex flex-col items-end pr-2">
+<span class="material-symbols-outlined text-primary-fixed text-[16px]">trending_flat</span>
+</div>
+</div>
+<!-- Rank 6 -->
+<div class="glass-panel clip-chamfer flex items-center p-2 transform transition-transform hover:scale-[1.02] cursor-pointer ml-0 mr-0 border-l-2 border-outline-variant">
+<div class="w-8 font-headline-md text-headline-md text-primary-fixed font-bold text-center">6</div>
+<div class="w-8 h-8 rounded border border-outline-variant overflow-hidden mx-3">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtNTMsOB9EpZX5Ii2XWr0J1Eod1oFu8dAQmMjGXckCymr75AtRku27gssox_vbiCGKrzbuI4paLMJsbc-s5Rr_w7gCdWVE_QYvUQQwwDPwDUaleLDVN7SwLjNkV-QhNbLz7yAdl2z5gRwxaP-MiwdTp-nzk8quCb_Rn1SW3Y3NXC-RQnLlectq3VBs8MaqXwOPsBmo-Xw9QfDomh5e1EqCFpKqZWXnyDwOBQict3D4mMM-fC0URQAY2Q">
+</div>
+<div class="flex-grow">
+<div class="font-label-tactical text-label-tactical text-on-surface">NEXUS FALL</div>
+<div class="font-label-data text-label-data text-primary-fixed">6,890 경험치</div>
+</div>
+<div class="flex flex-col items-end pr-2">
+<span class="material-symbols-outlined text-primary-fixed text-[16px]">trending_down</span>
+</div>
+</div>
+<!-- Rank 7 -->
+<div class="glass-panel clip-chamfer flex items-center p-2 transform transition-transform hover:scale-[1.02] cursor-pointer ml-0 mr-0 border-l-2 border-outline-variant">
+<div class="w-8 font-headline-md text-headline-md text-primary-fixed font-bold text-center">7</div>
+<div class="w-8 h-8 rounded border border-outline-variant overflow-hidden mx-3">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWgh1tjCXKkESIarEMtP8ZyknjAAlaXKXOeRl24l2EZ9wMYBXmYpXgTM8GNOu5KaR2jYGI6K1ADNFDMc9hgQoLw9np_ReXUMdu3zyrN9GU5uC7mjMiX_NfcY5gZLPDziNQEnbssIQnUfi9uzshZCIjYDynsKWnQj335EL3fcdm7F6GavkCwGN0lXMf3aXep5P7mFFx8Qq_8bO_-YMEP0soBaCmvVD4eZ2oLqy-KqSba_XDrUblkXgwqg">
+</div>
+<div class="flex-grow">
+<div class="font-label-tactical text-label-tactical text-on-surface">SHADOW NET</div>
+<div class="font-label-data text-label-data text-primary-fixed">6,100 경험치</div>
+</div>
+</div>
+<!-- Rank 8 -->
+<div class="glass-panel clip-chamfer flex items-center p-2 transform transition-transform hover:scale-[1.02] cursor-pointer ml-0 mr-0 border-l-2 border-outline-variant">
+<div class="w-8 font-headline-md text-headline-md text-primary-fixed font-bold text-center">8</div>
+<div class="w-8 h-8 rounded border border-outline-variant overflow-hidden mx-3">
+<div class="w-full h-full bg-surface-container-highest flex items-center justify-center"><span class="material-symbols-outlined text-outline text-sm">videogame_asset</span></div>
+</div>
+<div class="flex-grow">
+<div class="font-label-tactical text-label-tactical text-on-surface">VOID BREACH</div>
+<div class="font-label-data text-label-data text-primary-fixed">5,820 경험치</div>
+</div>
+</div>
+<!-- Rank 9 -->
+<div class="glass-panel clip-chamfer flex items-center p-2 transform transition-transform hover:scale-[1.02] cursor-pointer ml-0 mr-0 border-l-2 border-outline-variant">
+<div class="w-8 font-headline-md text-headline-md text-primary-fixed font-bold text-center">9</div>
+<div class="w-8 h-8 rounded border border-outline-variant overflow-hidden mx-3">
+<div class="w-full h-full bg-surface-container-highest flex items-center justify-center"><span class="material-symbols-outlined text-outline text-sm">videogame_asset</span></div>
+</div>
+<div class="flex-grow">
+<div class="font-label-tactical text-label-tactical text-on-surface">NEON PULSE</div>
+<div class="font-label-data text-label-data text-primary-fixed">5,400 경험치</div>
+</div>
+</div>
+<!-- Rank 10 -->
+<div class="glass-panel clip-chamfer flex items-center p-2 transform transition-transform hover:scale-[1.02] cursor-pointer ml-0 mr-0 border-l-2 border-outline-variant">
+<div class="w-8 font-headline-md text-headline-md text-primary-fixed font-bold text-center">10</div>
+<div class="w-8 h-8 rounded border border-outline-variant overflow-hidden mx-3">
+<div class="w-full h-full bg-surface-container-highest flex items-center justify-center"><span class="material-symbols-outlined text-outline text-sm">videogame_asset</span></div>
+</div>
+<div class="flex-grow">
+<div class="font-label-tactical text-label-tactical text-on-surface">CYBER CORE</div>
+<div class="font-label-data text-label-data text-primary-fixed">4,950 경험치</div>
+</div>
+</div></div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface-container border-t border-outline-variant/50 shadow-[0_-4px_10px_rgba(171,214,0,0.1)] rounded-t-xl md:hidden"><div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer"><span class="material-symbols-outlined">newspaper</span><span class="font-label-tactical text-label-tactical mt-1">뉴스 피드</span></div><div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer"><span class="material-symbols-outlined">target</span><span class="font-label-tactical text-label-tactical mt-1">마이 픽</span></div><div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer"><span class="material-symbols-outlined">home</span><span class="font-label-tactical text-label-tactical mt-1">홈</span></div><div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-lg px-4 py-1 ring-1 ring-primary-fixed-dim translate-y-[-4px] transition-transform duration-150 shadow-lg"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">leaderboard</span><span class="font-label-tactical text-label-tactical mt-1 font-bold">랭킹</span></div><div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer"><span class="material-symbols-outlined">settings</span><span class="font-label-tactical text-label-tactical mt-1">설정</span></div></nav>
+
+
+
+
+</body></html>

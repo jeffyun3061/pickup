@@ -1,0 +1,226 @@
+<!DOCTYPE html><html class="dark" lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>GAME PICKUP - Loading</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Manrope:wght@400;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed": "#320046",
+                        "neon-purple": "#D05BFF",
+                        "on-secondary": "#520070",
+                        "surface-container": "#201F20",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed-variant": "#75009e",
+                        "on-background": "#e5e2e3",
+                        "cyber-orange": "#FFB300",
+                        "text-primary": "#E5E2E3",
+                        "tertiary": "#fff4ea",
+                        "secondary-fixed-dim": "#ecb1ff",
+                        "on-tertiary": "#432c00",
+                        "on-surface-variant": "#d0c6ab",
+                        "surface-container-lowest": "#0e0e0f",
+                        "tertiary-fixed": "#ffdeac",
+                        "surface-tint": "#e9c400",
+                        "on-primary-container": "#705e00",
+                        "primary-container": "#ffd700",
+                        "tertiary-container": "#ffd38e",
+                        "inverse-on-surface": "#313031",
+                        "surface-container-low": "#1c1b1c",
+                        "on-primary-fixed": "#221b00",
+                        "outline-variant": "#4d4732",
+                        "on-primary-fixed-variant": "#544600",
+                        "inverse-primary": "#705d00",
+                        "surface-bright": "#39393a",
+                        "primary": "#fff6df",
+                        "on-surface": "#e5e2e3",
+                        "surface": "#131314",
+                        "on-secondary-container": "#f0bbff",
+                        "text-muted": "#C4C9AC",
+                        "on-tertiary-fixed-variant": "#604100",
+                        "secondary-container": "#8e00bf",
+                        "primary-fixed": "#ffe16d",
+                        "inverse-surface": "#e5e2e3",
+                        "on-tertiary-fixed": "#281900",
+                        "on-error": "#690005",
+                        "surface-container-high": "#2a2a2b",
+                        "tertiary-fixed-dim": "#ffba38",
+                        "neon-yellow": "#FFD700",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#e9c400",
+                        "on-tertiary-container": "#7f5700",
+                        "surface-variant": "#353436",
+                        "surface-dim": "#131314",
+                        "on-primary": "#3a3000",
+                        "error-container": "#93000a",
+                        "secondary": "#ecb1ff",
+                        "secondary-fixed": "#f9d8ff",
+                        "background": "#131314",
+                        "outline": "#999077",
+                        "surface-container-highest": "#353436"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        "margin-desktop": "40px",
+                        "gutter": "16px",
+                        "margin-mobile": "20px",
+                        "base": "4px",
+                        "section-gap": "24px"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Space Grotesk"],
+                        "headline-xl": ["Space Grotesk"],
+                        "body-md": ["Manrope"],
+                        "headline-md": ["Space Grotesk"],
+                        "body-lg": ["Manrope"],
+                        "label-tactical": ["JetBrains Mono"],
+                        "label-data": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Space Grotesk"]
+                    },
+                    fontSize: {
+                        "headline-lg": ["32px", { lineHeight: "1.2", fontWeight: "700" }],
+                        "headline-xl": ["48px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-md": ["16px", { lineHeight: "1.5", fontWeight: "400" }],
+                        "headline-md": ["24px", { lineHeight: "1.2", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "label-tactical": ["12px", { lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "500" }],
+                        "label-data": ["10px", { lineHeight: "1.0", fontWeight: "400" }],
+                        "headline-lg-mobile": ["28px", { lineHeight: "1.2", fontWeight: "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .grid-pattern {
+            background-image: linear-gradient(rgba(255, 215, 0, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .grid-pattern {
+                background-size: 40px 40px;
+            }
+        }
+
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .box-glow {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        /* Loading Bar Animation */
+        @keyframes loading-progress {
+            0% { width: 0%; }
+            50% { width: 60%; }
+            100% { width: 100%; }
+        }
+        
+        .animate-loading {
+            animation: loading-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        /* Glitch Animation */
+        @keyframes glitch-anim {
+            0% { clip: rect(44px, 9999px, 8px, 0); }
+            20% { clip: rect(51px, 9999px, 86px, 0); }
+            40% { clip: rect(69px, 9999px, 66px, 0); }
+            60% { clip: rect(87px, 9999px, 93px, 0); }
+            80% { clip: rect(6px, 9999px, 14px, 0); }
+            100% { clip: rect(13px, 9999px, 46px, 0); }
+        }
+        
+        .glitch-effect {
+            position: relative;
+        }
+        
+        .glitch-effect::before,
+        .glitch-effect::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+        
+        .glitch-effect::before {
+            left: 2px;
+            text-shadow: -1px 0 rgba(208, 91, 255, 0.8);
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+        
+        .glitch-effect::after {
+            left: -2px;
+            text-shadow: -1px 0 rgba(255, 215, 0, 0.8);
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+    </style>
+</head>
+<body class="bg-background text-text-primary min-h-screen flex flex-col items-center justify-center relative overflow-hidden grid-pattern">
+<!-- Main Content Container -->
+<main class="w-full max-w-md mx-auto h-screen flex flex-col relative z-10 px-margin-mobile md:px-margin-desktop py-8">
+<!-- Top Metadata -->
+<header class="flex justify-between items-center w-full mb-auto font-label-tactical text-text-muted">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-neon-yellow">campaign</span>
+<span class="text-sm font-bold text-inverse-surface">피키 뉴스 데스크</span>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="flex flex-col items-center justify-center flex-grow w-full relative">
+<!-- Central Image Display -->
+<div class="relative w-full aspect-square max-w-[320px] mx-auto mb-8 rounded-xl overflow-hidden border border-outline-variant bg-surface-container/30 backdrop-blur-md p-1 box-glow">
+<img alt="Game Pickup Character" class="w-full h-full object-cover rounded-lg opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAInczCnPhwFw-YlpfIEtqMFUGesXWRZdQ-WKz9EU2Nn4-5-0eobGYuw15R3Bv4Jqkt4ycKtko7l1fd0eg3kw1fJ-ywUBqwTr2eJoZdTKpg0tX-cEuwsV9fFsNGOaLHp8stfezGzl66P39gndVK2C-2ItzvCOZ7CsYUT58EYqoHnDsUjCCsarZ4yP5D3Zk61FoR4Z1oKlTooucV29xVsk4nLFTwsav6CEo1W-9QYz7g6QOlyYl8_0RJjv8ZG9ZbmOx8EP0">
+<!-- Overlay elements to blend image into tech-noir -->
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60 pointer-events-none"></div>
+</div>
+<!-- Logo & Title -->
+<div class="text-center z-10 w-full">
+<h1 class="font-headline-xl text-neon-yellow tracking-tight mb-3 glitch-effect neon-glow" data-text="GAME PICKUP">
+                    GAME PICKUP
+                </h1>
+<p class="font-body-md text-text-primary bg-surface-container/90 inline-block px-5 py-2 rounded-lg border border-outline-variant backdrop-blur-sm shadow-lg">나만의 게임 픽, <span class="text-neon-purple font-bold">피키가 소식 전해 줄게!</span></p>
+</div>
+</section>
+<!-- Bottom Loading Area -->
+<footer class="w-full mt-auto pb-safe">
+<!-- Loading Status Text -->
+<div class="flex justify-between items-end mb-2 font-label-data text-text-muted">
+<span class="flex items-center gap-1 text-sm font-bold"><span class="material-symbols-outlined text-[16px] animate-pulse text-neon-yellow">edit_note</span> 피키가 정성껏 소식 모으는 중... 🔍📝</span>
+<span class="text-outline text-xs">버전 2.4.0</span>
+</div>
+<!-- Tactical Loading Bar -->
+<div class="w-full h-2 bg-surface-container-high/30 rounded-full overflow-hidden relative border border-outline-variant/50">
+    <div class="h-full w-full bg-gradient-to-r from-transparent via-neon-yellow/40 to-transparent animate-pulse shadow-[0_0_15px_rgba(255,215,0,0.3)]"></div>
+</div>
+<!-- Terminal-style log output -->
+<div class="mt-4 font-body-md text-sm text-outline h-16 overflow-hidden flex flex-col justify-end">
+<p class="opacity-60">최신 기사들 하나하나 읽어보는 중! 📖</p>
+<p class="opacity-90 text-neon-purple">사령관님을 위해 제일 중요한 것만 쏙쏙! ✨</p>
+<p class="text-neon-yellow animate-pulse font-semibold">자, 오늘의 게임 소식 준비 다 됐어! 가볼까? 🚀</p>
+</div>
+</footer>
+</main>
+<!-- Background Additive Light Sources -->
+<div class="absolute top-1/4 -left-20 w-64 h-64 bg-neon-purple/10 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="absolute bottom-1/4 -right-20 w-64 h-64 bg-neon-yellow/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+
+</body></html>
