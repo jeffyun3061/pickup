@@ -191,3 +191,10 @@ node tools/capture-screenshots.mjs
 ## 라이선스
 
 개인 포트폴리오·실서비스 PoC 목적 프로젝트입니다.
+
+
+## 포트폴리오 문서
+
+구현 범위와 설계 흐름을 정리한 문서입니다.
+
+- [포트폴리오 정리](docs/PORTFOLIO.md)
