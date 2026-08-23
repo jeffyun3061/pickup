@@ -2,9 +2,7 @@
 
 Android 우선 게임 소식 앱 + 운영 API + 관리자 웹.
 
-UI는 Stitch **Neon-Tactical** 시안. 콘텐츠는 운영 검수·발행 후 API로 채워진다.
-
-## 왜 이렇게 만들었나 (면접용 한 줄)
+UI는 Stitch **Neon-Tactical** 시안. 콘텐츠는 운영 검수·발행 후 API로 채워진다
 
 화면은 공통 컴포넌트 + 디자인 토큰으로만 조립하고, 데이터는 `CatalogRepository` 뒤로 숨긴다.  
 백엔드는 **Public / Admin JWT / Ingest Key**로 권한을 나누고, 소식은 **상태 머신**(`draft→reviewed→published`)으로만 발행한다.
