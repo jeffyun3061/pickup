@@ -54,6 +54,7 @@ export function FeedCard({
       style={({ pressed }) => [
         styles.card,
         isHome && styles.cardHome,
+        isHome && isRead && styles.cardRead,
         pressed && styles.pressed,
       ]}
     >
@@ -90,7 +91,7 @@ export function FeedCard({
           </AppText>
           {typeof groupCount === 'number' ? (
             <View style={styles.groupCount}>
-              <AppText style={styles.groupCountText}>{groupCount}</AppText>
+              <AppText style={styles.groupCountText}>{groupCount}건</AppText>
             </View>
           ) : null}
           {isBookmarked ? (
@@ -139,6 +140,9 @@ const styles = StyleSheet.create({
   cardHome: {
     padding: 12,
     marginBottom: 10,
+  },
+  cardRead: {
+    opacity: 0.62,
   },
   pressed: {
     backgroundColor: theme.color.surfaceContainerHigh,
