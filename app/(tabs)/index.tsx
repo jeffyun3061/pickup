@@ -110,7 +110,7 @@ export default function HomeScreen() {
           </View>
           <View style={{ paddingHorizontal: layout.margin }}>
             <View style={styles.segmentWrap}>
-              <Pressable onPress={() => setHomeTab('news')} style={[styles.segmentItem, homeTab === 'news' && styles.segmentItemActive]} accessibilityRole="tab" accessibilityState={{ selected: homeTab === 'news' }}><AppText style={[styles.segmentText, homeTab === 'news' && styles.segmentTextActive]}>새 소식</AppText></Pressable>
+              <Pressable onPress={() => setHomeTab('news')} style={[styles.segmentItem, homeTab === 'news' && styles.segmentItemActive]} accessibilityRole="tab" accessibilityState={{ selected: homeTab === 'news' }}><AppText style={[styles.segmentText, homeTab === 'news' && styles.segmentTextActive]}>오늘 소식</AppText></Pressable>
               <Pressable onPress={() => setHomeTab('events')} style={[styles.segmentItem, homeTab === 'events' && styles.segmentItemActive]} accessibilityRole="tab" accessibilityState={{ selected: homeTab === 'events' }}><AppText style={[styles.segmentText, homeTab === 'events' && styles.segmentTextActive]}>이벤트 기간</AppText></Pressable>
             </View>
             {loading ? <LoadingState /> : null}
