@@ -17,7 +17,7 @@ const META: Record<
   }
 > = {
   news: {
-    label: '뉴스 피드',
+    label: '새 소식',
     shortLabel: '뉴스',
     icon: 'newspaper-outline',
     activeIcon: 'newspaper',

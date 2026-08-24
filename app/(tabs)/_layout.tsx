@@ -26,7 +26,7 @@ export default function TabLayout() {
         headerShown: false,
       }}
     >
-      <Tabs.Screen name="news" options={{ title: '소식' }} />
+      <Tabs.Screen name="news" options={{ title: '새 소식' }} />
       <Tabs.Screen name="games" options={{ title: '내 게임' }} />
       <Tabs.Screen name="index" options={{ title: '홈' }} />
       <Tabs.Screen name="ranking" options={{ title: '랭킹' }} />

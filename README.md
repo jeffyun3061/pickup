@@ -16,9 +16,9 @@
 UI는 Stitch **Neon-Tactical** 시안을 기준으로 구현했습니다.  
 아래 캡처는 `design-ref/` HTML 시안을 모바일 뷰포트(393×852)로 렌더링한 것입니다.
 
-| 뉴스 피드 | 마이 픽 | 홈 |
+| 새 소식 | 마이 픽 | 홈 |
 |:---:|:---:|:---:|
-| ![뉴스 피드](docs/screenshots/01-news-feed.png) | ![마이 픽](docs/screenshots/02-my-pick.png) | ![홈](docs/screenshots/03-home.png) |
+| ![새 소식](docs/screenshots/01-news-feed.png) | ![마이 픽](docs/screenshots/02-my-pick.png) | ![홈](docs/screenshots/03-home.png) |
 | 통합 소식·팝업&행사 세그먼트 | 2×2 슬롯 + 게임 등록 | 피키 가이드 + 마이 픽업 소식 |
 
 | 랭킹 | 설정 |
@@ -26,7 +26,7 @@ UI는 Stitch **Neon-Tactical** 시안을 기준으로 구현했습니다.
 | ![랭킹](docs/screenshots/04-ranking.png) | ![설정](docs/screenshots/05-settings.png) |
 | 포디움 + 관심 순위 | 알림 3종·공지·문의 |
 
-**탭 순서:** 뉴스 피드 · 마이 픽 · 홈 · 랭킹 · 설정
+**탭 순서:** 새 소식 · 마이 픽 · 홈 · 랭킹 · 설정
 
 ---
 

@@ -55,7 +55,7 @@ export default function NewsScreen() {
 
   return (
     <Screen refreshing={refreshing} onRefresh={() => void refresh()}>
-      <AppHeader title="소식" />
+      <AppHeader title="새 소식" />
       {offline ? <OfflineBanner lastUpdatedAt={lastUpdatedAt} onRetry={() => void refresh()} /> : null}
       <SegmentedControl
         value={segment}
