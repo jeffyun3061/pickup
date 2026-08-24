@@ -114,11 +114,28 @@ draft → reviewed → published
 ### 1. 모바일 (기본: preview 모드)
 
 ```powershell
-cd C:\dev\pickup
+cd C:\Users\user\Projects\pickup
 npm install
 npm run verify
 npm run android
 ```
+
+### Android Studio Live UI (권장)
+
+개발 클라이언트를 한 번 설치한 뒤에는 매번 APK를 다시 빌드하지 않아도 됩니다. Android Studio에서 에뮬레이터를 켜고, 프로젝트 루트에서 Metro를 실행합니다.
+
+```powershell
+cd C:\Users\user\Projects\pickup
+$env:NODE_OPTIONS = "--dns-result-order=ipv4first"
+npx expo start --dev-client --host localhost --port 8081 --android --clear
+```
+
+이후 `app/` 또는 `src/`의 TypeScript·스타일을 저장하면 Fast Refresh로 에뮬레이터에 바로 반영됩니다. Metro 터미널에서 `r`을 누르면 수동 새로고침합니다.
+
+다음 변경은 네이티브 APK를 다시 빌드해야 합니다.
+
+- `android/`, `app.json`, 권한·아이콘·스플래시 변경
+- 네이티브 모듈이 포함된 패키지 추가·삭제
 
 API 연동 시:
 
