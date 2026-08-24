@@ -1,3 +1,4 @@
+import { router, type Href } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
 import {
   FlatList,
@@ -17,10 +18,9 @@ import { GameTile } from '@/src/components/GameTile';
 import { PickSquadCard } from '@/src/components/PickSquadCard';
 import { Screen } from '@/src/components/Screen';
 import { EmptyState, LoadingState } from '@/src/components/StateBlocks';
-import type { Game } from '@/src/domain/models';
+import { MAX_SELECTED_GAMES, type Game } from '@/src/domain/models';
 import { useCatalog } from '@/src/hooks/useCatalog';
 import { useApp } from '@/src/state/AppProvider';
-import { useLayout } from '@/src/theme/useLayout';
 import { theme } from '@/src/theme/tokens';
 
 const SLOTS_PER_PAGE = 4;
@@ -53,7 +53,6 @@ function chunkSlots(slots: Slot[], size: number): Slot[][] {
 export default function GamesScreen() {
   const { preferences, setGameIds } = useApp();
   const { loading, games, content } = useCatalog();
-  const layout = useLayout();
   const [trackWidth, setTrackWidth] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -96,6 +95,7 @@ export default function GamesScreen() {
 
   const addGame = async (id: string) => {
     if (selected.includes(id)) return;
+    if (selected.length >= MAX_SELECTED_GAMES) return;
     await setGameIds([...selected, id]);
     setPickerOpen(false);
   };
@@ -115,16 +115,18 @@ export default function GamesScreen() {
 
   return (
     <Screen scroll={false} contentStyle={styles.screenBody}>
-      <AppHeader title="MY PICK" />
-      <View style={styles.heroBlock}>
-        <AppText variant="display" style={[styles.hero, { fontSize: layout.displaySize }]}>
-          마이픽
-        </AppText>
-        <AppText variant="label" style={styles.sub}>
-          피키가 관리하는 내 게임들
-        </AppText>
-        <AppText variant="caption">
-          선택 {selected.length}개 · 한 화면 4칸 · 옆으로 넘겨 등록
+      <AppHeader title="마이픽" />
+      <View style={styles.featureIntro}>
+        <View style={styles.featureTitleLine}>
+          <AppText style={styles.featureTitle}>MY PICK</AppText>
+          <AppText variant="data" style={styles.featureCount}>
+            {selected.length}/{MAX_SELECTED_GAMES} GAMES
+          </AppText>
+        </View>
+        <AppText variant="caption" numberOfLines={1}>
+          {selected.length === 0
+            ? '좋아하는 게임을 담고 맞춤 소식을 받아보세요'
+            : '내 게임을 모으고 최신 소식을 바로 확인하세요'}
         </AppText>
       </View>
 
@@ -146,6 +148,7 @@ export default function GamesScreen() {
           {trackWidth > 0 ? (
             <FlatList
               data={pages}
+              style={styles.pager}
               keyExtractor={(_, index) => `page-${index}`}
               horizontal
               pagingEnabled
@@ -171,20 +174,9 @@ export default function GamesScreen() {
                           <PickSquadCard
                             game={slot.game}
                             selected
-                            badgeLabel={
-                              (newsCountByGame.get(slot.game.id) ?? 0) > 0
-                                ? newsCountByGame.get(slot.game.id) === 1
-                                  ? '새로운 소식'
-                                  : `${newsCountByGame.get(slot.game.id)} 알림`
-                                : undefined
-                            }
-                            badgeTone={
-                              (newsCountByGame.get(slot.game.id) ?? 0) > 1
-                                ? 'purple'
-                                : 'yellow'
-                            }
-                            onPress={() => void removeGame(slot.game.id)}
-                            onLongPress={() => void removeGame(slot.game.id)}
+                            hasNew={(newsCountByGame.get(slot.game.id) ?? 0) > 0}
+                            onPress={() => router.push(`/game/${slot.game.id}` as Href)}
+                            onRemove={() => void removeGame(slot.game.id)}
                           />
                         ) : (
                           <GameRegisterSlot
@@ -206,7 +198,7 @@ export default function GamesScreen() {
             ))}
           </View>
           <AppText variant="data" style={styles.hint}>
-            카드를 탭하면 해제 · 빈 칸에서 게임 등록
+            빈 칸에서 게임 등록 · − 버튼으로 내 게임 해제
           </AppText>
         </View>
       ) : null}
@@ -260,24 +252,39 @@ const styles = StyleSheet.create({
   screenBody: {
     flex: 1,
   },
-  heroBlock: {
+  featureIntro: {
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(68,73,51,0.45)',
     paddingBottom: 14,
-    marginBottom: 16,
+    marginBottom: 14,
+    gap: 4,
   },
-  hero: {
+  featureTitleLine: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  featureTitle: {
+    fontFamily: theme.font.headline,
+    fontSize: 32,
+    lineHeight: 38,
+    letterSpacing: -0.8,
     color: theme.color.onSurface,
-    textTransform: 'uppercase',
-    marginBottom: 8,
   },
-  sub: { marginBottom: 6 },
+  featureCount: {
+    marginBottom: 5,
+    color: theme.color.neonYellow,
+  },
   pagerWrap: {
-    flex: 1,
-    minHeight: 380,
+    height: 595,
+  },
+  pager: {
+    height: 530,
+    flexGrow: 0,
   },
   page: {
-    height: 500,
+    height: 530,
   },
   grid: {
     flex: 1,
@@ -286,7 +293,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignContent: 'space-between',
     gap: 12,
-    height: 500,
+    height: 530,
   },
   cell: {
     width: '48%',
@@ -297,7 +304,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 10,
-    marginTop: 18,
+    marginTop: 12,
   },
   dot: {
     width: 8,
@@ -316,7 +323,7 @@ const styles = StyleSheet.create({
   },
   hint: {
     textAlign: 'center',
-    marginTop: 12,
+    marginTop: 8,
     color: theme.color.textMuted,
   },
   modalBackdrop: {

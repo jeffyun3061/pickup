@@ -4,7 +4,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage/lib/commonjs/index.js';
 
-import type { Preferences } from '@/src/domain/models';
+import { normalizeGameIds, type Preferences } from '@/src/domain/models';
 
 /**
  * 비민감 설치 환경설정 저장소.
@@ -34,7 +34,7 @@ export function parsePreferences(raw: string | null): Preferences {
     return {
       ...defaultPreferences,
       ...parsed,
-      gameIds: Array.isArray(parsed.gameIds) ? parsed.gameIds.filter((id) => typeof id === 'string') : [],
+      gameIds: normalizeGameIds(parsed.gameIds),
       notifications: {
         ...defaultPreferences.notifications,
         ...parsed.notifications,

@@ -14,7 +14,7 @@ import {
   preferencesStore,
 } from '@/src/data/preferencesStore';
 import { syncInstallationPreferences } from '@/src/data/installationApi';
-import type { Preferences } from '@/src/domain/models';
+import { normalizeGameIds, type Preferences } from '@/src/domain/models';
 
 type AppContextValue = {
   ready: boolean;
@@ -42,7 +42,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         const loaded = await preferencesStore.load();
         if (mounted) setPreferences(loaded);
-        await bootstrapInstallationChannel(loaded);
+
+        // 앱 화면은 네트워크를 기다리지 않는다.
+        // API 미기동·오프라인이어도 먼저 진입하고 설치/푸시 동기화는 백그라운드에서 수행한다.
+        void bootstrapInstallationChannel(loaded);
       } finally {
         if (mounted) setReady(true);
       }
@@ -63,11 +66,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const completeOnboarding = useCallback(async (gameIds: string[]) => {
-    await persistAndSync({ ...preferences, onboardingCompleted: true, gameIds });
+    await persistAndSync({
+      ...preferences,
+      onboardingCompleted: true,
+      gameIds: normalizeGameIds(gameIds),
+    });
   }, [preferences, persistAndSync]);
 
   const setGameIds = useCallback(async (gameIds: string[]) => {
-    await persistAndSync({ ...preferences, gameIds });
+    await persistAndSync({ ...preferences, gameIds: normalizeGameIds(gameIds) });
   }, [preferences, persistAndSync]);
 
   const setNotifications = useCallback(

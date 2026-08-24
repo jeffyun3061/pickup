@@ -103,6 +103,7 @@ export const PREVIEW_CONTENT: ContentItem[] = [
     officialUrl: 'https://example.com/preview/shadow-patch',
     publishedAt: hoursAgo(0.15),
     imageKey: 'coverTactical',
+    importance: 3,
   },
   {
     id: 'c2',
@@ -134,6 +135,7 @@ export const PREVIEW_CONTENT: ContentItem[] = [
     startsAt: hoursAgo(5),
     endsAt: new Date(now + 14 * 86400_000).toISOString(),
     imageKey: 'feedCity',
+    timeBoundType: 'season',
   },
   {
     id: 'c4',
@@ -173,8 +175,10 @@ export const PREVIEW_CONTENT: ContentItem[] = [
     ],
     officialUrl: 'https://example.com/preview/void-core',
     publishedAt: hoursAgo(18),
+    startsAt: hoursAgo(18),
     endsAt: new Date(now + 7 * 86400_000).toISOString(),
     imageKey: 'feedCore',
+    timeBoundType: 'exchange',
   },
   {
     id: 'c7',
@@ -190,6 +194,7 @@ export const PREVIEW_CONTENT: ContentItem[] = [
     endsAt: new Date(now + 9 * 86400_000).toISOString(),
     reservationUrl: 'https://example.com/preview/cyber-rsvp',
     imageKey: 'coverOps',
+    timeBoundType: 'collab',
   },
   {
     id: 'c8',
@@ -201,6 +206,30 @@ export const PREVIEW_CONTENT: ContentItem[] = [
     officialUrl: 'https://example.com/preview/shadow-goods',
     publishedAt: hoursAgo(30),
     imageKey: 'coverTactical',
+  },
+  {
+    id: 'c9',
+    gameId: 'g_shadow',
+    gameName: '프로젝트: 섀도우',
+    kind: 'update',
+    title: '신규 작전 보상 및 주간 미션 안내',
+    summaryPoints: ['주간 미션 보상 상향', '작전 초기화 일정 변경'],
+    officialUrl: 'https://example.com/preview/shadow-missions',
+    publishedAt: hoursAgo(1.1),
+    imageKey: 'feedShadow',
+    importance: 2,
+  },
+  {
+    id: 'c10',
+    gameId: 'g_shadow',
+    gameName: '프로젝트: 섀도우',
+    kind: 'update',
+    title: '개발자 코멘트: 다음 밸런스 조정 예고',
+    summaryPoints: ['정찰병 스킬 사용감 개선'],
+    officialUrl: 'https://example.com/preview/shadow-devnote',
+    publishedAt: hoursAgo(2.4),
+    imageKey: 'coverTactical',
+    importance: 1,
   },
 ];
 

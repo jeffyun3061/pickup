@@ -7,6 +7,7 @@ import { AppText } from '@/src/components/AppText';
 import { GameTile } from '@/src/components/GameTile';
 import { Screen } from '@/src/components/Screen';
 import { EmptyState, LoadingState } from '@/src/components/StateBlocks';
+import { MAX_SELECTED_GAMES } from '@/src/domain/models';
 import { useCatalog } from '@/src/hooks/useCatalog';
 import { useApp } from '@/src/state/AppProvider';
 import { theme } from '@/src/theme/tokens';
@@ -24,20 +25,22 @@ export default function OnboardingScreen() {
   const canContinue = catalogEmpty || selected.length >= 1;
 
   const toggle = (id: string) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+    setSelected((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= MAX_SELECTED_GAMES) return prev;
+      return [...prev, id];
+    });
   };
 
   return (
     <Screen contentStyle={styles.content}>
-      <AppHeader title="ONBOARDING" />
+      <AppHeader title="마이픽 시작" />
       <AppText variant="display" style={styles.hero}>
         관심 게임을{'\n'}고르세요
       </AppText>
       <AppText variant="caption" style={styles.desc}>
         선택한 게임 소식만 홈·알림에 모입니다. 게임 목록은 운영자가 등록한 뒤
-        여기에 표시됩니다.
+        여기에 표시됩니다. 최대 {MAX_SELECTED_GAMES}개까지 고를 수 있어요.
       </AppText>
 
       {loading ? <LoadingState /> : null}
