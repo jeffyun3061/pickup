@@ -2,46 +2,53 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
-import { resolveImage, type AppImageName } from '@/src/assets/images';
+import { useCatalogImage } from '@/src/assets/useCatalogImage';
 import { AppText } from '@/src/components/AppText';
-import { formatKstDate, kindLabel, type ContentItem } from '@/src/domain/models';
-import { useLayout } from '@/src/theme/useLayout';
+import { formatRelativeTime, kindLabel, type ContentItem } from '@/src/domain/models';
+import { bookmarkStore, readStore, useIdSet } from '@/src/state/idSetStore';
 import { theme } from '@/src/theme/tokens';
 
 type Props = {
   item: ContentItem;
   showSummary?: boolean;
-  /** home: 홈 마이픽업용 큰 카드 / compact: 뉴스 피드 목록 */
+  /** home: 홈 마이픽업용 / compact: 뉴스 피드 목록 */
   density?: 'compact' | 'home';
+  /** 같은 게임의 읽지 않은 소식 묶음 개수. 홈 카드 안에서만 표시한다. */
+  groupCount?: number;
 };
 
 /**
- * 피드/홈 공용 카드.
- * 홈(density=home)은 썸네일·타이포·카드 간격을 넓혀 가독성을 우선한다.
+ * 피드/홈 공용 카드 — 토스식 가독성.
+ * 정보 우선순위: 제목 > 요약 한 줄 > 게임·시간 메타.
+ * 장식(스트라이프·HUD 배지·푸터 링크)은 걷어내고 여백과 타이포로만 위계를 만든다.
  */
 export function FeedCard({
   item,
-  showSummary = false,
+  showSummary = true,
   density = 'compact',
+  groupCount,
 }: Props) {
-  const layout = useLayout();
   const isHome = density === 'home';
   const accent =
     item.kind === 'popup' || item.kind === 'goods'
       ? theme.color.neonPurple
       : theme.color.neonYellow;
-  const localThumb = resolveImage(item.imageKey as AppImageName | undefined);
-  const thumb = item.imageUrl
-    ? { uri: item.imageUrl }
-    : localThumb;
-  const thumbWidth = isHome ? layout.homeFeedThumb : layout.feedThumb;
-  const summaryPoints = showSummary
-    ? item.summaryPoints.slice(0, isHome ? 2 : 3)
-    : [];
+  const { source: thumb, isFallback, onError: onImageError } = useCatalogImage(
+    item.imageUrl,
+    item.imageKey,
+  );
+  const summary = showSummary ? item.summaryPoints[0] : undefined;
+  useIdSet(readStore);
+  useIdSet(bookmarkStore);
+  const isRead = readStore.has(item.id);
+  const isBookmarked = bookmarkStore.has(item.id);
 
   return (
     <Pressable
-      onPress={() => router.push(`/content/${item.id}`)}
+      onPress={() => {
+        readStore.add(item.id);
+        router.push(`/content/${item.id}`);
+      }}
       accessibilityRole="button"
       accessibilityLabel={`${item.gameName} ${item.title}`}
       style={({ pressed }) => [
@@ -50,77 +57,71 @@ export function FeedCard({
         pressed && styles.pressed,
       ]}
     >
-      <View style={[styles.stripe, { backgroundColor: accent }]} />
-      <View
-        style={[
-          styles.thumb,
-          isHome && styles.thumbHome,
-          {
-            width: thumbWidth,
-            backgroundColor: theme.color.surfaceContainerHighest,
-          },
-        ]}
-      >
+      <View style={[styles.thumb, isHome && styles.thumbHome]}>
         {thumb ? (
-          <Image source={thumb} style={styles.thumbImage} resizeMode="cover" />
+          <>
+            <Image
+              source={thumb}
+              style={styles.thumbImage}
+              resizeMode="cover"
+              blurRadius={isFallback && item.themedFallback ? 3 : 0}
+              onError={onImageError}
+            />
+            {isFallback && item.themedFallback ? (
+              <View
+                pointerEvents="none"
+                style={[
+                  styles.mockTint,
+                  { backgroundColor: item.fallbackColor ?? theme.color.neonPurple },
+                ]}
+              />
+            ) : null}
+          </>
         ) : (
-          <AppText style={[styles.thumbText, isHome && { fontSize: 32 }]}>
-            {item.gameName.slice(0, 1)}
-          </AppText>
+          <AppText style={styles.thumbText}>{item.gameName.slice(0, 1)}</AppText>
         )}
-        <View style={[styles.badge, isHome && styles.badgeHome, { backgroundColor: accent }]}>
-          <AppText style={[styles.badgeText, isHome && styles.badgeTextHome]} numberOfLines={1}>
-            {kindLabel(item.kind)}
-          </AppText>
-        </View>
       </View>
-      <View style={[styles.body, isHome && styles.bodyHome]}>
-        <View style={styles.meta}>
-          <AppText
-            style={[styles.game, isHome && styles.gameHome, { color: accent }]}
-            numberOfLines={1}
-          >
-            {item.gameName}
+
+      <View style={styles.body}>
+        <View style={styles.metaRow}>
+          <View style={[styles.dot, { backgroundColor: accent }]} />
+          <AppText style={styles.game} numberOfLines={1}>
+            {item.gameName} · {kindLabel(item.kind)}
           </AppText>
-          <AppText
-            variant="data"
-            style={[styles.time, isHome && styles.timeHome]}
-            numberOfLines={1}
-          >
-            {formatKstDate(item.publishedAt)}
+          {typeof groupCount === 'number' ? (
+            <View style={styles.groupCount}>
+              <AppText style={styles.groupCountText}>{groupCount}</AppText>
+            </View>
+          ) : null}
+          {isBookmarked ? (
+            <Ionicons name="bookmark" size={12} color={theme.color.neonYellow} />
+          ) : null}
+          <AppText style={styles.time} numberOfLines={1}>
+            {formatRelativeTime(item.publishedAt)}
           </AppText>
         </View>
+
         <AppText
-          variant="subtitle"
+          style={[styles.title, isHome && styles.titleHome, isRead && styles.readTitle]}
           numberOfLines={2}
-          style={[styles.title, isHome && styles.titleHome]}
         >
           {item.title}
         </AppText>
-        {summaryPoints.length > 0 ? (
-          <View style={[styles.points, isHome && styles.pointsHome]}>
-            {summaryPoints.map((p) => (
-              <View key={p} style={[styles.point, isHome && styles.pointHome]}>
-                <AppText style={{ color: accent, fontSize: 10, marginTop: 1 }}>
-                  ▶
-                </AppText>
-                <AppText
-                  style={[styles.pointText, isHome && styles.pointTextHome]}
-                  numberOfLines={isHome ? 2 : 2}
-                >
-                  {p}
-                </AppText>
-              </View>
-            ))}
-          </View>
-        ) : null}
-        <View style={[styles.footer, isHome && styles.footerHome]}>
-          <AppText style={[styles.more, isHome && styles.moreHome, { color: accent }]}>
-            정보
+
+        {summary ? (
+          <AppText style={styles.summary} numberOfLines={1}>
+            {summary}
           </AppText>
-          <Ionicons name="arrow-forward" size={isHome ? 16 : 14} color={accent} />
-        </View>
+        ) : null}
+
       </View>
+
+      <Ionicons
+        name="chevron-forward"
+        size={18}
+        color={theme.color.textMuted}
+        style={styles.chevron}
+      />
     </Pressable>
   );
 }
@@ -128,169 +129,107 @@ export function FeedCard({
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(32, 31, 32, 0.88)',
-    borderWidth: 1,
-    borderColor: theme.color.outlineVariant,
-    borderRadius: theme.radius.lg,
-    overflow: 'hidden',
-    marginBottom: theme.space.gutter,
-    minHeight: 112,
+    alignItems: 'center',
+    backgroundColor: theme.color.surfaceContainer,
+    borderRadius: theme.radius.xl,
+    padding: 10,
+    marginBottom: 8,
+    gap: 10,
   },
   cardHome: {
-    minHeight: 124,
-    marginBottom: 14,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.color.surfaceContainer,
+    padding: 12,
+    marginBottom: 10,
   },
   pressed: {
-    opacity: 0.92,
-  },
-  stripe: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    zIndex: 2,
+    backgroundColor: theme.color.surfaceContainerHigh,
   },
   thumb: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRightWidth: 1,
-    borderRightColor: theme.color.outlineVariant,
-    flexShrink: 0,
+    width: 52,
+    height: 52,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.color.surfaceContainerHighest,
     overflow: 'hidden',
-    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'flex-start',
+    marginTop: 2,
   },
   thumbHome: {
-    borderRightWidth: 0,
+    width: 58,
+    height: 58,
   },
   thumbImage: {
+    width: '100%',
+    height: '100%',
+  },
+  mockTint: {
     ...StyleSheet.absoluteFill,
-    opacity: 1,
+    opacity: 0.32,
   },
   thumbText: {
     fontFamily: theme.font.headline,
-    fontSize: 26,
+    fontSize: 22,
     color: theme.color.onSurface,
-  },
-  badge: {
-    position: 'absolute',
-    top: 8,
-    left: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 2,
-    zIndex: 1,
-  },
-  badgeHome: {
-    top: 10,
-    left: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  badgeText: {
-    fontFamily: theme.font.labelReg,
-    fontSize: 9,
-    color: theme.color.onPrimary,
-  },
-  badgeTextHome: {
-    fontSize: 10,
   },
   body: {
     flex: 1,
     minWidth: 0,
-    padding: 12,
-    gap: 6,
-    justifyContent: 'space-between',
+    gap: 4,
   },
-  bodyHome: {
-    paddingVertical: 11,
-    paddingHorizontal: 12,
-    gap: 5,
-  },
-  meta: {
+  metaRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   game: {
-    fontFamily: theme.font.label,
-    fontSize: 10,
-    letterSpacing: 1,
     flex: 1,
     minWidth: 0,
-  },
-  gameHome: {
-    fontSize: 11,
-    letterSpacing: 1.2,
+    fontFamily: theme.font.bodySemi,
+    fontSize: 12,
+    color: theme.color.textMuted,
   },
   time: {
     flexShrink: 0,
-  },
-  timeHome: {
+    fontFamily: theme.font.body,
     fontSize: 11,
-    lineHeight: 14,
+    color: theme.color.textMuted,
+    opacity: 0.8,
   },
   title: {
-    color: theme.color.onSurface,
-    flexShrink: 1,
-  },
-  titleHome: {
+    fontFamily: theme.font.bodySemi,
     fontSize: 15,
     lineHeight: 21,
     letterSpacing: -0.2,
+    color: theme.color.onSurface,
   },
-  points: {
-    gap: 4,
+  titleHome: {
+    fontSize: 16,
+    lineHeight: 22,
   },
-  pointsHome: {
-    gap: 4,
-    marginTop: 0,
-    paddingLeft: 0,
-    borderLeftWidth: 0,
-    paddingVertical: 0,
-  },
-  point: {
-    flexDirection: 'row',
-    gap: 6,
-    alignItems: 'flex-start',
-  },
-  pointHome: {
-    gap: 6,
-    paddingLeft: 0,
-  },
-  pointText: {
-    flex: 1,
-    minWidth: 0,
+  summary: {
     fontFamily: theme.font.body,
     fontSize: 13,
     lineHeight: 18,
-    color: theme.color.onSurfaceVariant,
+    color: theme.color.textMuted,
   },
-  pointTextHome: {
+  readTitle: {
+    color: theme.color.textMuted,
+  },
+  groupCount: {
+    minWidth: 16,
+    alignItems: 'flex-end',
+  },
+  groupCountText: {
+    fontFamily: theme.font.bodySemi,
     fontSize: 12,
-    lineHeight: 17,
-    color: theme.color.onSurfaceVariant,
+    color: theme.color.neonYellow,
   },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    gap: 4,
-  },
-  footerHome: {
-    marginTop: 2,
-    paddingTop: 4,
-    borderTopWidth: 0,
-  },
-  more: {
-    fontFamily: theme.font.label,
-    fontSize: 10,
-    letterSpacing: 1,
-  },
-  moreHome: {
-    fontSize: 10,
+  chevron: {
+    flexShrink: 0,
   },
 });
