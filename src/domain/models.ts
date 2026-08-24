@@ -88,7 +88,7 @@ export type Preferences = {
 export function kindLabel(kind: ContentKind): string {
   switch (kind) {
     case 'update':
-      return '업데이트';
+      return '새 소식';
     case 'event':
       return '인게임 이벤트';
     case 'popup':

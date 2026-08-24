@@ -13,7 +13,7 @@ import { PreviewCatalogRepository } from '@/src/data/PreviewCatalogRepository';
 
 describe('domain labels', () => {
   it('maps content kinds for UI badges', () => {
-    expect(kindLabel('update')).toBe('업데이트');
+    expect(kindLabel('update')).toBe('새 소식');
     expect(kindLabel('popup')).toBe('팝업');
     expect(isOfflineKind('goods')).toBe(true);
     expect(isOfflineKind('event')).toBe(false);

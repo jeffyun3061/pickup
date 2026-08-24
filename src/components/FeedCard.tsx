@@ -11,7 +11,7 @@ import { theme } from '@/src/theme/tokens';
 type Props = {
   item: ContentItem;
   showSummary?: boolean;
-  /** home: 홈 마이픽업용 / compact: 뉴스 피드 목록 */
+  /** home: 홈 마이픽업용 / compact: 새 소식 목록 */
   density?: 'compact' | 'home';
   /** 같은 게임의 읽지 않은 소식 묶음 개수. 홈 카드 안에서만 표시한다. */
   groupCount?: number;
