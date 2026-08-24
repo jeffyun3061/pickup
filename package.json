@@ -37,10 +37,10 @@
     "vitest": "^3.2.4"
   },
   "scripts": {
-    "start": "expo start --port 8082",
-    "android": "expo start --android --port 8082",
-    "ios": "expo start --ios --port 8082",
-    "web": "expo start --web --port 8082",
+    "start": "expo start --dev-client --host localhost --port 8081",
+    "android": "expo start --dev-client --host localhost --port 8081 --android",
+    "ios": "expo start --dev-client --host localhost --port 8081 --ios",
+    "web": "expo start --web --port 8081",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "verify": "npm run typecheck && npm run test"
