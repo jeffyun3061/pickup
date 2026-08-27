@@ -9,6 +9,8 @@ artifacts/
 dist/
 .expo/
 .git/
+/emulator-*.png
+/emulator*.png
 server/.venv/
 server/__pycache__/
 server/pytest-cache-files-/
