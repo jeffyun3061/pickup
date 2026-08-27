@@ -24,7 +24,7 @@ export async function bootstrapInstallationChannel(preferences: Preferences): Pr
 
   // 첫 실행에서 바로 권한을 묻지 않는다. 사용자가 관심 게임을 고른 뒤
   // 알림의 가치를 이해한 시점에만 네이티브 권한 대화상자를 연다.
-  if (!preferences.onboardingCompleted || preferences.gameIds.length === 0) return;
+  if (preferences.gameIds.length === 0) return;
   try {
     await registerPushTokenIfAvailable();
   } catch {

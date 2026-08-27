@@ -83,7 +83,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setGameIds = useCallback(async (gameIds: string[]) => {
     const next = { ...preferences, gameIds: normalizeGameIds(gameIds) };
     await persistAndSync(next);
-    if (next.onboardingCompleted && next.gameIds.length > 0) {
+    if (next.gameIds.length > 0) {
       void bootstrapInstallationChannel(next);
     }
   }, [preferences, persistAndSync]);

@@ -48,7 +48,7 @@
 | 요청 단위 트랜잭션 (flush/commit) | [x] | |
 | Installation 발급·인증 | [x] | ADR-010 |
 | Device token / preferences | [x] | |
-| Publish → push outbox enqueue | [x] | 업데이트·인게임 이벤트만 같은 게임별로 묶어 `피키의 게임 소식!` 공통 제목으로 발송; 팝업·굿즈는 푸시 제외; PostgreSQL `FOR UPDATE SKIP LOCKED`로 중복 처리 방지 |
+| Publish → push outbox enqueue | [x] | 업데이트·인게임 이벤트만 같은 게임별로 묶어 `피키의 새로운 소식 ~♬` 공통 제목으로 발송; 팝업·굿즈는 푸시 제외; PostgreSQL `FOR UPDATE SKIP LOCKED`로 중복 처리 방지 |
 | Outbox dispatch | [x] | `POST /admin/push/dispatch` (개발은 스텁, 운영은 Expo Push API) |
 | pytest (권한 부정 + 푸시 플로우) | [x] | |
 | 수집 소스·실행 이력·작업 API | [x] | RSS/API/HTML, draft-only |

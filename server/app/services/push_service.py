@@ -42,7 +42,7 @@ _EXPO_HARD_TICKET_ERRORS = (
 )
 
 _CHANNEL_TITLE = {
-    "content_published": "피키의 게임 소식!",
+    "content_published": "피키의 새로운 소식 ~♬",
     "event_ending": "피키의 이벤트 알림",
     "service_notice": "피키 공지",
 }

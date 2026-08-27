@@ -176,14 +176,14 @@ def test_notification_copy_uses_brand_and_groups_content() -> None:
         "content_published",
         {"game_name": "니케", "content_count": 3, "title": "첫 번째 소식"},
     )
-    assert title == "피키의 게임 소식!"
+    assert title == "피키의 새로운 소식 ~♬"
     assert body == "니케에 새 소식 3건이 올라왔어요"
 
     title, body = _notification_copy(
         "content_published",
         {"game_name": "니케", "content_count": 1, "title": "신규 캐릭터 안내"},
     )
-    assert title == "피키의 게임 소식!"
+    assert title == "피키의 새로운 소식 ~♬"
     assert body == "니케 · 신규 캐릭터 안내"
 
 
