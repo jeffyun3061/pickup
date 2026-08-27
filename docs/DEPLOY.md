@@ -148,6 +148,19 @@ SQLite는 지원하지 않는다. 1인 개발 환경에서는 Docker를 설치�
 개발 의존성의 PostgreSQL 실행 스크립트를 사용한다. 데이터는 저장소의 무시된 경로에
 보존되며, 운영 Railway PostgreSQL과 엔진은 동일하게 PostgreSQL이다.
 
+Docker 실행 형태를 사전에 검증할 때는 저장소 루트에서 Compose를 사용한다.
+
+```powershell
+docker compose up --build
+# API: http://127.0.0.1:8000/health/ready
+# 관리자: http://127.0.0.1:8000/admin
+```
+
+Compose의 `postgres`와 `api`는 로컬 통합 검증용이다. `collector`는 자동 수집을 켤 때만
+`docker compose --profile collector up --build`로 추가한다. 운영으로 옮길 때는
+PostgreSQL 컨테이너의 데이터 디렉터리를 복사하지 말고 관리형 PostgreSQL을 새로 만든 뒤
+`DATABASE_URL`만 교체한다. API는 같은 `Dockerfile`과 `/data` 볼륨을 사용한다.
+
 ```powershell
 cd C:\Users\user\Projects\pickup\server
 .\.venv\Scripts\pip install -r requirements-dev.txt

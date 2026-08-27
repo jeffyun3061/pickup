@@ -35,8 +35,9 @@ npm run dev
 앱 실연동: `EXPO_PUBLIC_CATALOG_MODE=api`, `EXPO_PUBLIC_API_URL=http://<host>:8000`
 
 로컬 개발은 Docker를 요구하지 않는다. `run_local_pg_api.py`가 PostgreSQL을
-`server/tmp/gamepickup-postgres`에 실행하고, Dockerfile/Compose는 CI와 운영 컨테이너
-배포 검증용으로만 사용한다.
+`server/tmp/gamepickup-postgres`에 실행한다. 컨테이너 실행 형태가 필요하면 루트에서
+`docker compose up --build`로 API와 PostgreSQL을 함께 검증하고, Dockerfile/Compose는
+CI와 운영 컨테이너 배포에도 재사용한다. 운영 DB는 관리형 PostgreSQL을 사용한다.
 
 ## 원칙
 - Expo Router + TypeScript

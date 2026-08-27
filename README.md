@@ -229,7 +229,19 @@ copy .env.example .env
 `run_local_pg_api.py`는 Docker 없이 개발 의존성의 PostgreSQL을
 `server/tmp/gamepickup-postgres`에 시작하고 FastAPI를 함께 실행합니다. 데이터는
 스크립트를 다시 실행해도 보존되며, 로컬·CI·운영 모두 PostgreSQL을 사용합니다.
-Dockerfile과 `compose.yaml`은 CI 및 나중의 컨테이너 배포 검증용으로만 유지합니다.
+
+컨테이너와 같은 실행 형태를 미리 확인하려면 저장소 루트에서 다음을 실행합니다.
+
+```powershell
+docker compose up --build
+# API: http://127.0.0.1:8000/health/ready
+# 관리자: http://127.0.0.1:8000/admin
+```
+
+Compose의 `postgres`는 로컬·CI용이고, `api`는 운영과 동일한 Dockerfile을 사용합니다.
+자동 수집기는 첫 출시 후 필요할 때만 `docker compose --profile collector up --build`로
+추가합니다. 운영에서는 PostgreSQL 컨테이너를 직접 관리하지 않고 Railway 같은 관리형
+PostgreSQL을 사용하며, API 이미지와 `/data` 볼륨만 이동합니다.
 
 전체 API 테스트는 별도 임베디드 PostgreSQL에서 실행합니다.
 
