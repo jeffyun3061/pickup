@@ -1,6 +1,7 @@
 """설치 credential → device token → preference → publish outbox → dispatch 계약."""
 
 import json
+from datetime import datetime, timedelta, timezone
 
 
 def _admin_headers(c, password: str) -> dict[str, str]:
@@ -106,6 +107,76 @@ def test_install_publish_enqueues_and_dispatch(client) -> None:
     # 재호출 시 pending 없음
     again = c.post("/api/v1/admin/push/dispatch", headers=admin).json()
     assert again["processed"] == 0
+
+
+def test_manual_dispatch_can_override_quiet_hours(client, monkeypatch) -> None:
+    """대시보드의 즉시 발송은 예약된 조용시간 푸시도 처리한다."""
+    c, password = client
+    admin = _admin_headers(c, password)
+
+    game = c.post(
+        "/api/v1/admin/games",
+        headers=admin,
+        json={"id": "g_quiet", "name": "Quiet Game"},
+    )
+    assert game.status_code == 201
+
+    reg = c.post("/api/v1/installations").json()
+    inst_headers = {
+        "X-Installation-Id": reg["installation_id"],
+        "X-Installation-Secret": reg["secret"],
+    }
+    assert c.put(
+        "/api/v1/installations/me/device-token",
+        headers=inst_headers,
+        json={"platform": "android", "token": "ExponentPushToken[quiet-test]"},
+    ).status_code == 200
+    assert c.put(
+        "/api/v1/installations/me/preferences",
+        headers=inst_headers,
+        json={
+            "game_ids": ["g_quiet"],
+            "notifications": {"selected_game_news": True},
+        },
+    ).status_code == 200
+
+    from app.services import push_service
+
+    monkeypatch.setattr(
+        push_service,
+        "resolve_available_at",
+        lambda *_args, **_kwargs: datetime.now(timezone.utc) + timedelta(hours=1),
+    )
+    content = c.post(
+        "/api/v1/admin/contents",
+        headers=admin,
+        json={
+            "game_id": "g_quiet",
+            "kind": "update",
+            "title": "예약 알림 테스트",
+            "summary_points": ["테스트"],
+            "official_url": "https://example.com/quiet",
+            "status": "draft",
+        },
+    ).json()
+    assert c.patch(
+        f"/api/v1/admin/contents/{content['id']}",
+        headers=admin,
+        json={"status": "reviewed"},
+    ).status_code == 200
+    assert c.patch(
+        f"/api/v1/admin/contents/{content['id']}",
+        headers=admin,
+        json={"status": "published"},
+    ).status_code == 200
+
+    delayed = c.post("/api/v1/admin/push/dispatch", headers=admin).json()
+    assert delayed["processed"] == 0
+
+    immediate = c.post(
+        "/api/v1/admin/push/dispatch?force=true", headers=admin
+    ).json()
+    assert immediate == {"processed": 1, "sent": 1, "failed": 0}
 
 
 def test_content_pushes_are_grouped_by_game(client) -> None:

@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 _MAX_ATTEMPTS = 3
 _MAX_GROUPED_CONTENTS = 20
+_ANDROID_PUSH_CHANNEL_ID = "game-news"
 
 # Expo는 HTTP 200이어도 메시지별 ticket 오류를 반환할 수 있다. 토큰 오류는
 # 해당 토큰만 삭제하고, 페이로드·자격증명 오류는 영구 실패로 보관한다.
@@ -266,9 +267,11 @@ class PushService:
             count += 1
         return count
 
-    def dispatch_pending(self, *, limit: int = 100) -> PushDispatchOut:
+    def dispatch_pending(
+        self, *, limit: int = 100, ignore_schedule: bool = False
+    ) -> PushDispatchOut:
         settings = get_settings()
-        pending = self.outbox.list_pending(limit=limit)
+        pending = self.outbox.list_pending(limit=limit, ignore_schedule=ignore_schedule)
         sent = 0
         failed = 0
         for row in pending:
@@ -319,7 +322,7 @@ class PushService:
                 "body": body,
                 "data": payload,
                 "sound": "default",
-                "channelId": "default",
+                "channelId": _ANDROID_PUSH_CHANNEL_ID,
             }
             for token in expo_tokens
         ]

@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import { router, type Href } from 'expo-router';
-import { Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
 
 import {
   ensureInstallation,
@@ -8,6 +8,8 @@ import {
   upsertDeviceToken,
 } from '@/src/data/installationApi';
 import type { Preferences } from '@/src/domain/models';
+
+export const ANDROID_PUSH_CHANNEL_ID = 'game-news';
 
 /**
  * 설치 credential + preference 동기 + (가능 시) device token 등록.
@@ -32,40 +34,55 @@ export async function bootstrapInstallationChannel(preferences: Preferences): Pr
   }
 }
 
-async function registerPushTokenIfAvailable(): Promise<void> {
-  // Expo Go SDK 53+ Android는 remote push API가 제거되어 import 시점에 throw 한다.
-  // 실서비스 네이티브 빌드에서만 토큰을 등록한다.
-  if (Constants.appOwnership === 'expo') return;
+async function configureNotificationChannel(Notifications: typeof import('expo-notifications')) {
+  if (Platform.OS !== 'android') return;
+  await Notifications.setNotificationChannelAsync(ANDROID_PUSH_CHANNEL_ID, {
+    name: '게임 소식',
+    importance: Notifications.AndroidImportance.HIGH,
+    vibrationPattern: [0, 250, 250, 250],
+    sound: 'default',
+    lightColor: '#FFD700',
+  });
+}
 
-  // 동적 import: 웹/테스트 환경에서 네이티브 모듈 부재를 허용
+/** 앱 설정에서 알림 권한을 다시 확인하고 토큰을 재등록한다. */
+export async function requestPushAccess(): Promise<boolean> {
+  if (Constants.appOwnership === 'expo') return false;
+
   const Notifications = await import('expo-notifications');
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: '게임 소식',
-      importance: Notifications.AndroidImportance.DEFAULT,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FFD700',
-    });
-  }
+  await configureNotificationChannel(Notifications);
   const permission = await Notifications.getPermissionsAsync();
-  let final = permission;
-  if (permission.status !== 'granted') {
-    final = await Notifications.requestPermissionsAsync();
-  }
-  if (final.status !== 'granted') return;
+  const final =
+    permission.status === 'granted'
+      ? permission
+      : await Notifications.requestPermissionsAsync();
+  if (final.status !== 'granted') return false;
 
-  // 서버가 Expo Push API로 발송하므로 Expo push token을 등록한다 (FCM 토큰 아님)
   const projectId =
     Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
   const expoToken = await Notifications.getExpoPushTokenAsync(
     projectId ? { projectId } : undefined,
   );
   const token = typeof expoToken.data === 'string' ? expoToken.data : null;
-  if (!token || token.length < 8) return;
+  if (!token || token.length < 8) return false;
 
   const platform =
     Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'web';
   await upsertDeviceToken({ platform, token });
+  return true;
+}
+
+export async function openNotificationSettings(): Promise<void> {
+  await Linking.openSettings();
+}
+
+async function registerPushTokenIfAvailable(): Promise<void> {
+  // Expo Go SDK 53+ Android는 remote push API가 제거되어 import 시점에 throw 한다.
+  // 실서비스 네이티브 빌드에서만 토큰을 등록한다.
+  if (Constants.appOwnership === 'expo') return;
+
+  // 동적 import: 웹/테스트 환경에서 네이티브 모듈 부재를 허용
+  await requestPushAccess();
 }
 
 type NotificationData = Record<string, unknown> | undefined;
@@ -93,7 +110,7 @@ export async function setupNotificationNavigation(): Promise<() => void> {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       // 앱을 보고 있는 중에도 새 소식 알림을 놓치지 않도록 기본음을 사용한다.
-      // 백그라운드 알림은 서버 payload의 sound: "default"와 Android 채널 설정을 따른다.
+      // 백그라운드 알림은 서버 payload의 sound와 Android 채널 설정을 따른다.
       shouldPlaySound: true,
       shouldSetBadge: false,
       shouldShowBanner: true,

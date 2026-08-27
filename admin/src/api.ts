@@ -280,9 +280,9 @@ export const api = {
     }),
   ingestRuns: (limit = 50) =>
     request<IngestRun[]>(`/api/v1/admin/ingest-runs?limit=${limit}`),
-  dispatchPush: (limit = 200) =>
+  dispatchPush: (limit = 200, force = false) =>
     request<{ processed: number; sent: number; failed: number }>(
-      `/api/v1/admin/push/dispatch?limit=${limit}`,
+      `/api/v1/admin/push/dispatch?limit=${limit}&force=${force}`,
       { method: 'POST' },
     ),
   uploadImage: (file: File) => {

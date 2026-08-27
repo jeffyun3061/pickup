@@ -17,14 +17,16 @@ class PushOutboxRepository:
         self.db.flush()
         return item
 
-    def list_pending(self, *, limit: int = 100) -> list[PushOutbox]:
+    def list_pending(
+        self, *, limit: int = 100, ignore_schedule: bool = False
+    ) -> list[PushOutbox]:
         now = datetime.now(timezone.utc)
+        conditions = [PushOutbox.status == PushOutboxStatus.pending]
+        if not ignore_schedule:
+            conditions.append(PushOutbox.available_at <= now)
         stmt = (
             select(PushOutbox)
-            .where(
-                PushOutbox.status == PushOutboxStatus.pending,
-                PushOutbox.available_at <= now,
-            )
+            .where(*conditions)
             .order_by(PushOutbox.created_at.asc())
             .limit(limit)
             # 관리자 수동 발송과 스케줄러가 겹쳐도 같은 알림을 두 번

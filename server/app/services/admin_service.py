@@ -501,8 +501,8 @@ class AdminService:
         self._audit("문의 처리 완료", "inquiry", item.id, item.category)
         return inquiry_to_out(self.inquiries.save(item))
 
-    def dispatch_push(self, limit: int = 100) -> PushDispatchOut:
-        return self.push.dispatch_pending(limit=limit)
+    def dispatch_push(self, limit: int = 100, *, force: bool = False) -> PushDispatchOut:
+        return self.push.dispatch_pending(limit=limit, ignore_schedule=force)
 
     def push_stats(self) -> "PushStatsOut":
         from sqlalchemy import func as sa_func, select

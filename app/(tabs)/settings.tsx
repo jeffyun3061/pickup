@@ -1,11 +1,13 @@
 import { type Href, router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { Alert, Pressable, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppHeader } from '@/src/components/AppHeader';
 import { AppText } from '@/src/components/AppText';
 import { Screen } from '@/src/components/Screen';
 import { ToggleRow } from '@/src/components/ToggleRow';
+import { openNotificationSettings, requestPushAccess } from '@/src/data/pushBootstrap';
 import { useCatalog } from '@/src/hooks/useCatalog';
 import { useApp } from '@/src/state/AppProvider';
 import { theme } from '@/src/theme/tokens';
@@ -16,10 +18,34 @@ const PUBLIC_API_URL = (process.env.EXPO_PUBLIC_API_URL ?? '').replace(/\/+$/, '
 export default function SettingsScreen() {
   const { preferences, setNotifications, resetLocalData } = useApp();
   const { announcements } = useCatalog();
+  const [checkingPush, setCheckingPush] = useState(false);
   const n = preferences.notifications;
 
   const toggle = async (key: keyof typeof n) => {
     await setNotifications({ ...n, [key]: !n[key] });
+  };
+
+  const checkPush = async () => {
+    setCheckingPush(true);
+    try {
+      const granted = await requestPushAccess();
+      Alert.alert(
+        granted ? '알림이 켜져 있어요' : '알림 권한이 필요해요',
+        granted
+          ? '대시보드에서 발행한 소식이 이 기기로 도착할 준비가 됐어요.'
+          : '휴대폰 설정에서 GamePickup 알림을 허용한 뒤 다시 시도해 주세요.',
+        granted
+          ? [{ text: '확인' }]
+          : [
+              { text: '취소', style: 'cancel' },
+              { text: '설정 열기', onPress: () => void openNotificationSettings() },
+            ],
+      );
+    } catch {
+      Alert.alert('알림을 확인할 수 없어요', '잠시 후 다시 시도해 주세요.');
+    } finally {
+      setCheckingPush(false);
+    }
   };
 
   return (
@@ -51,6 +77,15 @@ export default function SettingsScreen() {
         value={n.serviceNotices}
         onValueChange={() => void toggle('serviceNotices')}
       />
+
+      <Pressable onPress={() => void checkPush()} style={styles.link} disabled={checkingPush}>
+        <View>
+          <AppText variant="subtitle">알림 권한 확인</AppText>
+          <AppText variant="caption">
+            {checkingPush ? '알림 권한을 확인하고 있어요…' : '알림이 안 오면 휴대폰 권한과 토큰을 다시 확인해요.'}
+          </AppText>
+        </View>
+      </Pressable>
 
       {announcements.length > 0 ? (
         <>

@@ -193,11 +193,12 @@ def admin_close_inquiry(
 @router.post("/push/dispatch", response_model=PushDispatchOut)
 def admin_dispatch_push(
     limit: int = Query(default=100, ge=1, le=500),
+    force: bool = Query(default=False),
     _: str = Depends(require_admin),
     db: Session = Depends(db_session),
 ) -> PushDispatchOut:
-    """outbox 발송 (EXPO_PUSH_ENABLED면 실발송, 아니면 스텁)."""
-    return AdminService(db).dispatch_push(limit=limit)
+    """outbox 발송. force=true는 관리자의 수동 즉시 발송으로 조용시간을 무시한다."""
+    return AdminService(db).dispatch_push(limit=limit, force=force)
 
 
 @router.get("/push/stats", response_model=PushStatsOut)

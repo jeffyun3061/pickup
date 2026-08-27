@@ -269,7 +269,9 @@ export default function GamesScreen() {
 
 const styles = StyleSheet.create({
   screenBody: {
-    flex: 1,
+    flexGrow: 1,
+    // 탭바가 콘텐츠 위에 떠도 페이지 안내가 가려지지 않게 한다.
+    paddingBottom: 144,
   },
   featureIntro: {
     borderBottomWidth: 1,
@@ -310,14 +312,15 @@ const styles = StyleSheet.create({
   },
   pagerWrap: {
     // 카드 2×2와 페이지 안내를 함께 포함한다.
+    flexShrink: 0,
   },
   pager: {
     flexGrow: 0,
   },
   page: {
+    flexShrink: 0,
   },
   grid: {
-    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
@@ -326,11 +329,15 @@ const styles = StyleSheet.create({
   },
   cell: {
     width: '48%',
+    flexGrow: 0,
+    flexShrink: 0,
   },
   pagerFooter: {
     alignItems: 'center',
     gap: 8,
-    marginTop: 12,
+    minHeight: 68,
+    marginTop: 8,
+    paddingBottom: 4,
   },
   dots: {
     flexDirection: 'row',

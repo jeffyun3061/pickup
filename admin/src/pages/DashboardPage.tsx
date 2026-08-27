@@ -115,7 +115,7 @@ export function DashboardPage() {
 
   const dispatchNow = () =>
     act('push-dispatch', async () => {
-      const result = await api.dispatchPush(200);
+      const result = await api.dispatchPush(200, true);
       flash(`푸시 발송 완료 — 성공 ${result.sent}건 · 실패 ${result.failed}건`);
     }, '');
 
@@ -328,7 +328,7 @@ export function DashboardPage() {
             {pushStats?.last_sent_at
               ? `마지막 발송 ${timeAgo(pushStats.last_sent_at)}`
               : '아직 발송 이력이 없습니다.'}
-            {' · '}발행 시 자동 enqueue, 심야(23~08시)분은 아침 8시에 발송됩니다.
+            {' · '}발행 시 자동 enqueue, 심야(23~08시)분은 예약됩니다. 이 버튼은 수동 즉시 발송입니다.
           </p>
         </div>
 

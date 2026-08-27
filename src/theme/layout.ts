@@ -42,18 +42,19 @@ export function resolveLayout(width: number): LayoutScale {
 /**
  * 마이픽 2×2 카드의 세로 크기를 화면 폭에 맞춰 계산한다.
  *
- * 고정 530dp 페이지는 360dp 폭/짧은 화면에서 하단 탭과 겹칠 수 있다.
- * 카드 비율은 시안의 세로형 카드 비율을 유지하되, 너무 작거나 커지지
- * 않도록 경계를 둔다. 실제 화면은 Screen의 세로 스크롤로 보완한다.
+ * 카드 2줄과 페이지 안내가 하단 탭바에 가리지 않도록 카드 높이를
+ * 폭과 페이지 구조에 맞춰 제한한다. 작은 화면에서도 게임 선택,
+ * 페이지 점, 하단 탭을 한 화면에서 확인할 수 있는 쪽을 우선한다.
  */
 export function resolvePickGrid(trackWidth: number): PickGridMetrics {
   const width = Number.isFinite(trackWidth) ? Math.max(0, trackWidth) : 0;
-  const cardHeight = width > 0 ? Math.min(260, Math.max(188, Math.round(width * 0.72))) : 220;
+  const cardHeight = width > 0 ? Math.min(190, Math.max(160, Math.round(width * 0.52))) : 176;
   const rowGap = width > 0 && width < 340 ? 10 : 12;
   const gridHeight = cardHeight * 2 + rowGap;
   return {
     cardHeight,
     gridHeight,
-    pagerHeight: gridHeight + 40,
+    // 점 + 안내 문구 + 상하 여백까지 자식 레이아웃에 포함한다.
+    pagerHeight: gridHeight + 72,
   };
 }

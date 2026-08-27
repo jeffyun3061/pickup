@@ -33,18 +33,18 @@ describe('resolveLayout', () => {
     const regular = resolvePickGrid(353);
     const large = resolvePickGrid(364);
 
-    expect(compact.cardHeight).toBeGreaterThanOrEqual(188);
+    expect(compact.cardHeight).toBeGreaterThanOrEqual(160);
     expect(compact.gridHeight).toBe(compact.cardHeight * 2 + 10);
     expect(regular.cardHeight).toBeGreaterThan(compact.cardHeight);
-    expect(large.cardHeight).toBeLessThanOrEqual(260);
-    expect(large.pagerHeight).toBe(large.gridHeight + 40);
+    expect(large.cardHeight).toBeLessThanOrEqual(190);
+    expect(large.pagerHeight).toBe(large.gridHeight + 72);
   });
 
   it('uses a safe fallback before the pager has measured its width', () => {
     expect(resolvePickGrid(0)).toEqual({
-      cardHeight: 220,
-      gridHeight: 452,
-      pagerHeight: 492,
+      cardHeight: 176,
+      gridHeight: 364,
+      pagerHeight: 436,
     });
   });
 });
