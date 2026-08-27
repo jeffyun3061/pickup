@@ -3,6 +3,7 @@ node_modules/
 admin/node_modules/
 android/.gradle/
 android/.kotlin/
+android/.cxx/
 android/build/
 android/app/build/
 artifacts/
@@ -12,6 +13,9 @@ dist/
 /emulator-*.png
 /emulator*.png
 server/.venv/
+server/tmp/
+server/.pytest_cache/
+server/pytest-cache-files-/
 server/__pycache__/
 server/pytest-cache-files-/
 *.log
