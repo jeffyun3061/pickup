@@ -13,12 +13,14 @@ const games: Game[] = Array.from({ length: 8 }, (_, index) => ({
 }));
 
 describe('chunkPickSlots', () => {
-  it('선택 전에도 2×2 등록 폼을 유지한다', () => {
-    const pages = chunkPickSlots([]);
+  it('선택 전에도 8칸을 두 페이지의 2×2 등록 폼으로 유지한다', () => {
+    const pages = chunkPickSlots([], PICK_SLOTS_PER_PAGE, 2);
 
-    expect(pages).toHaveLength(1);
+    expect(pages).toHaveLength(2);
     expect(pages[0]).toHaveLength(PICK_SLOTS_PER_PAGE);
+    expect(pages[1]).toHaveLength(PICK_SLOTS_PER_PAGE);
     expect(pages[0].every((slot) => slot.kind === 'empty')).toBe(true);
+    expect(pages[1].every((slot) => slot.kind === 'empty')).toBe(true);
   });
 
   it('1~3개 선택 시 빈 슬롯을 채워 첫 페이지를 네 칸으로 맞춘다', () => {
@@ -50,5 +52,7 @@ describe('chunkPickSlots', () => {
   it('잘못된 슬롯 수는 조기에 거부한다', () => {
     expect(() => chunkPickSlots([], 0)).toThrow(RangeError);
     expect(() => chunkPickSlots([], 1.5)).toThrow(RangeError);
+    expect(() => chunkPickSlots([], 4, 0)).toThrow(RangeError);
+    expect(() => chunkPickSlots([], 4, 1.5)).toThrow(RangeError);
   });
 });

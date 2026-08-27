@@ -27,6 +27,7 @@ import {
 } from '@/src/domain/models';
 import {
   chunkPickSlots,
+  PICK_PAGE_COUNT,
   PICK_SLOTS_PER_PAGE,
   type PickSlot,
 } from '@/src/domain/pickSlots';
@@ -36,7 +37,7 @@ import { useApp } from '@/src/state/AppProvider';
 import { resolvePickGrid } from '@/src/theme/layout';
 import { theme } from '@/src/theme/tokens';
 
-/** 시안 my_pick — 2×2(4칸) 페이지 + 가로 스와이프 + 게임 등록 슬롯 */
+/** 마이픽 — 2×2(4칸) 페이지 두 장 + 가로 스와이프 + 게임 등록 슬롯 */
 export default function GamesScreen() {
   const { preferences, setGameIds } = useApp();
   const { loading, offline, games, content } = useCatalog();
@@ -68,7 +69,7 @@ export default function GamesScreen() {
   );
 
   const pages = useMemo(
-    () => chunkPickSlots(selectedGames, PICK_SLOTS_PER_PAGE),
+    () => chunkPickSlots(selectedGames, PICK_SLOTS_PER_PAGE, PICK_PAGE_COUNT),
     [selectedGames],
   );
   const pickGrid = useMemo(() => resolvePickGrid(trackWidth), [trackWidth]);
@@ -206,10 +207,17 @@ export default function GamesScreen() {
             />
           ) : null}
 
-          <View style={styles.dots}>
-            {pages.map((_, i) => (
-              <View key={`dot-${i}`} style={[styles.dot, i === pageIndex && styles.dotActive]} />
-            ))}
+          <View style={styles.pagerFooter}>
+            <View style={styles.dots}>
+              {pages.map((_, i) => (
+                <View key={`dot-${i}`} style={[styles.dot, i === pageIndex && styles.dotActive]} />
+              ))}
+            </View>
+            {pages.length > 1 ? (
+              <AppText variant="data" style={styles.pagerHint}>
+                {pageIndex + 1}/{pages.length} · 좌우로 넘겨 8칸 보기
+              </AppText>
+            ) : null}
           </View>
         </View>
       ) : null}
@@ -301,7 +309,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.color.primaryContainer,
   },
   pagerWrap: {
-    // 카드 2×2와 페이지 점만 포함하고, 안내 문구를 위한 여백은 만들지 않는다.
+    // 카드 2×2와 페이지 안내를 함께 포함한다.
   },
   pager: {
     flexGrow: 0,
@@ -319,12 +327,20 @@ const styles = StyleSheet.create({
   cell: {
     width: '48%',
   },
+  pagerFooter: {
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 12,
+  },
   dots: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 10,
-    marginTop: 12,
+  },
+  pagerHint: {
+    color: theme.color.onSurfaceVariant,
+    letterSpacing: 0.3,
   },
   dot: {
     width: 8,

@@ -24,9 +24,10 @@ export function PickSquadCard({
   onPress,
   onRemove,
 }: Props) {
-  const { source: cover, isFallback, onError: onImageError } = useCatalogImage(
+  const { source: cover, isFallback, isGeneratedGameArt, onError: onImageError } = useCatalogImage(
     game.imageUrl,
     game.imageKey,
+    game.id,
   );
 
   return (
@@ -49,10 +50,10 @@ export function PickSquadCard({
             source={cover}
             style={styles.cover}
             resizeMode="cover"
-            blurRadius={isFallback && game.themedFallback ? 3 : 0}
+            blurRadius={isFallback && game.themedFallback && !isGeneratedGameArt ? 3 : 0}
             onError={onImageError}
           />
-          {isFallback && game.themedFallback ? (
+          {isFallback && game.themedFallback && !isGeneratedGameArt ? (
             <View
               pointerEvents="none"
               style={[styles.mockTint, { backgroundColor: game.color }]}

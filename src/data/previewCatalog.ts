@@ -20,7 +20,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '턴제 RPG',
     color: '#4B4A80',
     interestCount: 11800,
-    imageKey: 'rankCyber',
+    imageKey: 'gameHonkai',
   },
   {
     id: 'g_genshin_impact',
@@ -29,7 +29,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '오픈월드 액션',
     color: '#3E6B86',
     interestCount: 10900,
-    imageKey: 'feedNeon',
+    imageKey: 'gameGenshin',
   },
   {
     id: 'g_blue_archive',
@@ -38,7 +38,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '학원 RPG',
     color: '#2563A6',
     interestCount: 12850,
-    imageKey: 'rankVoid',
+    imageKey: 'gameBlueArchive',
   },
   {
     id: 'g_nikke',
@@ -47,7 +47,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '건슈팅 RPG',
     color: '#6B294D',
     interestCount: 9420,
-    imageKey: 'coverTactical',
+    imageKey: 'gameNikke',
   },
   {
     id: 'g_seven_knights',
@@ -56,7 +56,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '수집형 RPG',
     color: '#6A3D28',
     interestCount: 8100,
-    imageKey: 'rankDrift',
+    imageKey: 'gameSevenKnights',
   },
   {
     id: 'g_pokemon_go',
@@ -65,7 +65,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: 'AR 액션',
     color: '#2F5E9A',
     interestCount: 7540,
-    imageKey: 'feedZero',
+    imageKey: 'gamePokemonGo',
   },
   {
     id: 'g_girls_frontline_2',
@@ -74,7 +74,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '전략 RPG',
     color: '#374B68',
     interestCount: 6100,
-    imageKey: 'rankDrift',
+    imageKey: 'gameGirlsFrontline2',
   },
   {
     id: 'g_ihwan',
@@ -83,7 +83,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '액션 RPG',
     color: '#433B62',
     interestCount: 4980,
-    imageKey: 'rankGrid',
+    imageKey: 'gameIhwan',
   },
   {
     id: 'g_epic_seven',
@@ -92,7 +92,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '수집형 RPG',
     color: '#5D3A6E',
     interestCount: 4620,
-    imageKey: 'rankSynth',
+    imageKey: 'gameEpicSeven',
   },
   {
     id: 'g_trickcal_revive',
@@ -101,7 +101,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '볼따구 RPG',
     color: '#6B4D38',
     interestCount: 4200,
-    imageKey: 'feedShadow',
+    imageKey: 'gameTrickcal',
   },
   {
     id: 'g_arknights',
@@ -110,7 +110,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '전략 RPG',
     color: '#3B454B',
     interestCount: 3980,
-    imageKey: 'feedGrid',
+    imageKey: 'gameArknights',
   },
   {
     id: 'g_umamusume',
@@ -119,7 +119,7 @@ export const PREVIEW_GAMES: Game[] = [
     genre: '육성 시뮬레이션',
     color: '#7A3F58',
     interestCount: 3650,
-    imageKey: 'feedCore',
+    imageKey: 'gameUmamusume',
   },
 ];
 

@@ -19,7 +19,11 @@ function PodiumAvatar({
   size: number;
   borderColor: string;
 }) {
-  const { source: src, isFallback, onError } = useCatalogImage(row.imageUrl, row.imageKey);
+  const { source: src, isFallback, isGeneratedGameArt, onError } = useCatalogImage(
+    row.imageUrl,
+    row.imageKey,
+    row.gameId,
+  );
   return (
     <View
       style={[
@@ -38,10 +42,10 @@ function PodiumAvatar({
             source={src}
             style={styles.avatarImg}
             resizeMode="cover"
-            blurRadius={isFallback && row.themedFallback ? 3 : 0}
+            blurRadius={isFallback && row.themedFallback && !isGeneratedGameArt ? 3 : 0}
             onError={onError}
           />
-          {isFallback && row.themedFallback ? (
+          {isFallback && row.themedFallback && !isGeneratedGameArt ? (
             <View style={[styles.mockTint, { backgroundColor: row.color }]} />
           ) : null}
         </>
@@ -55,7 +59,11 @@ function PodiumAvatar({
 }
 
 function RankingAvatar({ row }: { row: RankingRow }) {
-  const { source, isFallback, onError } = useCatalogImage(row.imageUrl, row.imageKey);
+  const { source, isFallback, isGeneratedGameArt, onError } = useCatalogImage(
+    row.imageUrl,
+    row.imageKey,
+    row.gameId,
+  );
   return (
     <View style={styles.rowAvatar}>
       {source ? (
@@ -64,10 +72,10 @@ function RankingAvatar({ row }: { row: RankingRow }) {
             source={source}
             style={styles.rowImg}
             resizeMode="cover"
-            blurRadius={isFallback && row.themedFallback ? 3 : 0}
+            blurRadius={isFallback && row.themedFallback && !isGeneratedGameArt ? 3 : 0}
             onError={onError}
           />
-          {isFallback && row.themedFallback ? (
+          {isFallback && row.themedFallback && !isGeneratedGameArt ? (
             <View style={[styles.mockTint, { backgroundColor: row.color }]} />
           ) : null}
         </>

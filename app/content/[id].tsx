@@ -233,9 +233,9 @@ export default function ContentDetailScreen() {
         ))}
       </View>
       <View style={styles.analysisBlock}>
-        <View style={styles.takiHeader}>
-          <Image source={imageAssets.takiMascot} style={styles.takiAvatar} resizeMode="contain" />
-          <AppText style={styles.takiName}>타키의 한마디</AppText>
+        <View style={styles.pikiHeader}>
+          <Image source={imageAssets.pikiMascot} style={styles.pikiAvatar} resizeMode="contain" />
+          <AppText style={styles.pikiName}>피키의 한마디</AppText>
         </View>
         <View style={styles.speechBubble}>
           <View style={styles.speechTail} />
@@ -261,7 +261,7 @@ export default function ContentDetailScreen() {
           </>
         ) : (
           <AppText variant="body" style={styles.analysisPending}>
-            타키가 내용을 정리하고 있어요.
+            피키가 내용을 정리하고 있어요.
           </AppText>
         )}
         </View>
@@ -274,7 +274,7 @@ export default function ContentDetailScreen() {
         <AppText style={styles.ctaText}>공식 원문 보기</AppText>
       </Pressable>
       <AppText variant="caption" style={styles.sourceNote} numberOfLines={2}>
-        타키의 요약은 참고용이에요 · 자세한 내용은 공식 원문을 확인해 주세요.
+        피키의 요약은 참고용이에요 · 자세한 내용은 공식 원문을 확인해 주세요.
       </AppText>
     </Screen>
   );
@@ -374,13 +374,13 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 16,
   },
-  takiHeader: {
+  pikiHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     marginBottom: 10,
   },
-  takiAvatar: {
+  pikiAvatar: {
     width: 52,
     height: 52,
     borderRadius: 26,
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     borderColor: theme.color.neonYellow,
     backgroundColor: 'rgba(208, 91, 255, 0.08)',
   },
-  takiName: {
+  pikiName: {
     color: theme.color.neonYellow,
     fontFamily: theme.font.label,
     fontSize: 13,

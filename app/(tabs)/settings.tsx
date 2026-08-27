@@ -97,7 +97,7 @@ export default function SettingsScreen() {
             style={styles.link}
           >
             <AppText variant="subtitle">이용약관</AppText>
-            <AppText variant="caption">원문 링크와 타키의 참고 정리 안내</AppText>
+            <AppText variant="caption">원문 링크와 피키의 참고 정리 안내</AppText>
           </Pressable>
         </>
       ) : null}

@@ -30,18 +30,18 @@ DEMO_GAMES = [
 ]
 
 DEMO_FALLBACK_KEYS = {
-    "g_honkai_star_rail": "rankCyber",
-    "g_genshin_impact": "feedNeon",
-    "g_blue_archive": "rankVoid",
-    "g_nikke": "coverTactical",
-    "g_seven_knights": "rankDrift",
-    "g_pokemon_go": "feedZero",
-    "g_girls_frontline_2": "rankGrid",
-    "g_ihwan": "feedCore",
-    "g_epic_seven": "rankSynth",
-    "g_trickcal_revive": "coverOps",
-    "g_arknights": "feedShadow",
-    "g_umamusume": "feedGrid",
+    "g_honkai_star_rail": "gameHonkai",
+    "g_genshin_impact": "gameGenshin",
+    "g_blue_archive": "gameBlueArchive",
+    "g_nikke": "gameNikke",
+    "g_seven_knights": "gameSevenKnights",
+    "g_pokemon_go": "gamePokemonGo",
+    "g_girls_frontline_2": "gameGirlsFrontline2",
+    "g_ihwan": "gameIhwan",
+    "g_epic_seven": "gameEpicSeven",
+    "g_trickcal_revive": "gameTrickcal",
+    "g_arknights": "gameArknights",
+    "g_umamusume": "gameUmamusume",
 }
 
 # 카탈로그에서 제외한 예전 데모 게임은 기록을 삭제하지 않고 비활성화한다.
