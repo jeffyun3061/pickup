@@ -26,12 +26,12 @@ services:
       ENV: development
       DATABASE_URL: postgresql+psycopg://gamepickup:gamepickup_dev@postgres:5432/gamepickup
       CORS_ORIGINS: http://localhost:8000,http://127.0.0.1:8000,http://localhost:8081,http://127.0.0.1:8081
-      ADMIN_USERNAME: admin
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       # 개발 환경에서는 비워 두어도 서버가 시작된다. 관리자 로그인이 필요하면
-      # server/scripts/make_password_hash.py로 생성한 값을 .env에서 주입한다.
-      ADMIN_PASSWORD_HASH: ""
-      JWT_SECRET: compose-development-only-change-me
-      INGEST_API_KEY: compose-development-ingest-key
+      # server/scripts/make_password_hash.py로 생성한 값을 셸 또는 .env에서 주입한다.
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-}
+      JWT_SECRET: ${JWT_SECRET:-compose-development-only-change-me}
+      INGEST_API_KEY: ${INGEST_API_KEY:-compose-development-ingest-key}
       EXPO_PUSH_ENABLED: "false"
       SCHEDULER_ENABLED: "false"
       MEDIA_DIR: /data/media

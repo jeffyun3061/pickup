@@ -156,6 +156,23 @@ docker compose up --build
 # 관리자: http://127.0.0.1:8000/admin
 ```
 
+관리자 화면에서 게임·소식을 등록하려면 Compose를 처음 올리기 전에 로컬 관리자
+비밀번호 해시를 주입한다. 평문 비밀번호나 해시는 Git에 커밋하지 않는다.
+
+```powershell
+Copy-Item .env.example .env
+server\.venv\Scripts\python.exe server\scripts\make_password_hash.py "발표용-강한-비밀번호"
+# 출력된 bcrypt 문자열을 .env의 ADMIN_PASSWORD_HASH에 붙여 넣는다.
+# Compose .env에서는 해시의 각 '$'를 '$$'로 바꾼다(또는 셸 환경변수로 주입).
+docker compose up -d --build postgres api
+```
+
+이후 `http://127.0.0.1:8000/admin`에서 `ADMIN_USERNAME`과 해당 비밀번호로 로그인하면
+게임 등록 → 소식 초안 저장 → 검수 완료 → 발행 순서로 운영 흐름을 시연할 수 있다.
+`EXPO_PUSH_ENABLED=false`인 로컬 Compose에서는 푸시가 로그 스텁으로 처리되며,
+실제 휴대폰 알림은 Railway 운영 환경에서 `EXPO_PUSH_ENABLED=true`와 EAS 네이티브
+빌드를 사용해야 한다.
+
 Compose의 `postgres`와 `api`는 로컬 통합 검증용이다. `collector`는 자동 수집을 켤 때만
 `docker compose --profile collector up --build`로 추가한다. 운영으로 옮길 때는
 PostgreSQL 컨테이너의 데이터 디렉터리를 복사하지 말고 관리형 PostgreSQL을 새로 만든 뒤
