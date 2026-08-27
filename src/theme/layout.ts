@@ -42,19 +42,19 @@ export function resolveLayout(width: number): LayoutScale {
 /**
  * 마이픽 2×2 카드의 세로 크기를 화면 폭에 맞춰 계산한다.
  *
- * 카드 2줄과 페이지 안내가 하단 탭바에 가리지 않도록 카드 높이를
- * 폭과 페이지 구조에 맞춰 제한한다. 작은 화면에서도 게임 선택,
- * 페이지 점, 하단 탭을 한 화면에서 확인할 수 있는 쪽을 우선한다.
+ * 카드 2줄과 페이지 점이 하단 탭바에 가리지 않도록 카드 높이를
+ * 폭과 페이지 구조에 맞춰 제한한다. 등록 전에도 4개 슬롯과 점을
+ * 한 화면에서 확인할 수 있는 쪽을 우선한다.
  */
 export function resolvePickGrid(trackWidth: number): PickGridMetrics {
   const width = Number.isFinite(trackWidth) ? Math.max(0, trackWidth) : 0;
-  const cardHeight = width > 0 ? Math.min(190, Math.max(160, Math.round(width * 0.52))) : 176;
-  const rowGap = width > 0 && width < 340 ? 10 : 12;
+  const cardHeight = width > 0 ? Math.min(164, Math.max(136, Math.round(width * 0.44))) : 150;
+  const rowGap = width > 0 && width < 340 ? 10 : 11;
   const gridHeight = cardHeight * 2 + rowGap;
   return {
     cardHeight,
     gridHeight,
-    // 점 + 안내 문구 + 상하 여백까지 자식 레이아웃에 포함한다.
-    pagerHeight: gridHeight + 72,
+    // 점과 최소 여백까지 자식 레이아웃에 포함한다.
+    pagerHeight: gridHeight + 50,
   };
 }

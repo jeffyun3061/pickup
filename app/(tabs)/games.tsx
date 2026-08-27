@@ -142,9 +142,6 @@ export default function GamesScreen() {
             ) : null}
           </View>
         </View>
-        <AppText variant="caption" numberOfLines={1}>
-          게임 소식 준비중
-        </AppText>
       </View>
 
       {loading ? <LoadingState /> : null}
@@ -276,13 +273,12 @@ const styles = StyleSheet.create({
   featureIntro: {
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(68,73,51,0.45)',
-    paddingBottom: 14,
-    marginBottom: 14,
-    gap: 4,
+    paddingBottom: 10,
+    marginBottom: 10,
   },
   featureTitleLine: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
   },
@@ -294,8 +290,9 @@ const styles = StyleSheet.create({
     color: theme.color.onSurface,
   },
   featureCount: {
-    marginBottom: 5,
     color: theme.color.neonYellow,
+    fontSize: 12,
+    lineHeight: 16,
   },
   featureActions: {
     flexDirection: 'row',
@@ -334,10 +331,10 @@ const styles = StyleSheet.create({
   },
   pagerFooter: {
     alignItems: 'center',
-    gap: 8,
-    minHeight: 68,
-    marginTop: 8,
-    paddingBottom: 4,
+    gap: 6,
+    minHeight: 44,
+    marginTop: 6,
+    paddingBottom: 2,
   },
   dots: {
     flexDirection: 'row',
@@ -347,7 +344,9 @@ const styles = StyleSheet.create({
   },
   pagerHint: {
     color: theme.color.onSurfaceVariant,
-    letterSpacing: 0.3,
+    fontSize: 9,
+    lineHeight: 11,
+    letterSpacing: 0.2,
   },
   dot: {
     width: 8,
