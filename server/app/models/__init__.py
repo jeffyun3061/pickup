@@ -1,3 +1,3 @@
-from app.models.entities import Announcement, Content, Game, Inquiry
+from app.models.entities import Announcement, Content, Game, Inquiry, InstallationGame
 
-__all__ = ["Game", "Content", "Announcement", "Inquiry"]
+__all__ = ["Game", "Content", "Announcement", "Inquiry", "InstallationGame"]

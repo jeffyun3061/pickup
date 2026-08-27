@@ -43,6 +43,9 @@ const META: Record<
   },
 };
 
+/** 가운데 원형으로 띄우는 핵심 탭 */
+const CENTER_ROUTE = 'index';
+
 type TabBarProps = {
   state: {
     index: number;
@@ -58,10 +61,25 @@ type TabBarProps = {
   };
 };
 
-/** 시안 BottomNav — 360dp에서도 라벨이 잘리지 않게 short/full 전환 */
+/**
+ * BottomNav — 홈이 서비스의 핵심이라 가운데 원형 버튼으로 승격.
+ * 360dp에서도 라벨이 잘리지 않게 short/full 전환 유지.
+ */
 export function CustomTabBar({ state, navigation }: TabBarProps) {
   const insets = useSafeAreaInsets();
   const layout = useLayout();
+
+  const onPress = (route: { key: string; name: string; params?: object }, focused: boolean) => {
+    void Haptics.selectionAsync();
+    const event = navigation.emit({
+      type: 'tabPress',
+      target: route.key,
+      canPreventDefault: true,
+    });
+    if (!focused && !event.defaultPrevented) {
+      navigation.navigate(route.name, route.params);
+    }
+  };
 
   return (
     <View style={[styles.shell, { paddingBottom: Math.max(insets.bottom, 8) }]}>
@@ -73,6 +91,34 @@ export function CustomTabBar({ state, navigation }: TabBarProps) {
             shortLabel: route.name,
             icon: 'ellipse-outline' as const,
           };
+
+          if (route.name === CENTER_ROUTE) {
+            return (
+              <View key={route.key} style={styles.centerSlot}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={meta.label}
+                  accessibilityState={focused ? { selected: true } : {}}
+                  onPress={() => onPress(route, focused)}
+                  style={({ pressed }) => [
+                    styles.centerButton,
+                    focused && styles.centerButtonActive,
+                    pressed && styles.centerButtonPressed,
+                  ]}
+                >
+                  <Ionicons
+                    name={focused ? meta.activeIcon ?? meta.icon : meta.icon}
+                    size={26}
+                    color={focused ? theme.color.onPrimary : theme.color.neonYellow}
+                  />
+                </Pressable>
+                <AppText style={[styles.label, focused && styles.centerLabelActive]}>
+                  {meta.shortLabel}
+                </AppText>
+              </View>
+            );
+          }
+
           const label = layout.tabLabel === 'short' ? meta.shortLabel : meta.label;
 
           return (
@@ -81,24 +127,14 @@ export function CustomTabBar({ state, navigation }: TabBarProps) {
               accessibilityRole="button"
               accessibilityLabel={meta.label}
               accessibilityState={focused ? { selected: true } : {}}
-              onPress={() => {
-                void Haptics.selectionAsync();
-                const event = navigation.emit({
-                  type: 'tabPress',
-                  target: route.key,
-                  canPreventDefault: true,
-                });
-                if (!focused && !event.defaultPrevented) {
-                  navigation.navigate(route.name, route.params);
-                }
-              }}
+              onPress={() => onPress(route, focused)}
               style={styles.item}
             >
-              <View style={[styles.pill, focused && styles.pillActive]}>
+              <View style={styles.pill}>
                 <Ionicons
                   name={focused ? meta.activeIcon ?? meta.icon : meta.icon}
-                  size={layout.isCompact ? 18 : 20}
-                  color={focused ? theme.color.onPrimary : theme.color.textMuted}
+                  size={layout.isCompact ? 19 : 21}
+                  color={focused ? theme.color.neonYellow : theme.color.textMuted}
                 />
                 <AppText
                   style={[styles.label, focused && styles.labelActive]}
@@ -119,58 +155,75 @@ export function CustomTabBar({ state, navigation }: TabBarProps) {
 
 const styles = StyleSheet.create({
   shell: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
     paddingHorizontal: 6,
+    paddingTop: 30,
+    backgroundColor: theme.color.background,
   },
   bar: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    backgroundColor: 'rgba(14, 14, 15, 0.96)',
+    backgroundColor: 'rgba(14, 14, 15, 0.97)',
     borderTopLeftRadius: theme.radius.xl,
     borderTopRightRadius: theme.radius.xl,
     borderWidth: 1,
     borderColor: 'rgba(68, 73, 51, 0.6)',
-    paddingTop: 6,
-    paddingBottom: 4,
+    paddingTop: 8,
+    paddingBottom: 6,
     paddingHorizontal: 2,
   },
   item: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     minWidth: 0,
   },
   pill: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 4,
-    paddingVertical: 6,
-    borderRadius: theme.radius.md,
-    gap: 2,
+    paddingVertical: 4,
+    gap: 3,
     width: '100%',
     maxWidth: 72,
   },
-  pillActive: {
+  centerSlot: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    minWidth: 0,
+    gap: 3,
+    paddingVertical: 4,
+  },
+  centerButton: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    marginTop: -30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.color.surfaceLowest,
+    borderWidth: 1.5,
+    borderColor: theme.color.neonYellow,
+  },
+  centerButtonActive: {
     backgroundColor: theme.color.primaryContainer,
-    shadowColor: theme.color.neonYellow,
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 5,
-    transform: [{ translateY: -2 }],
+    borderColor: theme.color.primaryContainer,
+  },
+  centerButtonPressed: {
+    transform: [{ scale: 0.94 }],
+  },
+  centerLabelActive: {
+    color: theme.color.neonYellow,
+    fontFamily: theme.font.label,
   },
   label: {
     fontFamily: theme.font.labelReg,
     fontSize: 9,
     color: theme.color.textMuted,
     textAlign: 'center',
-    width: '100%',
   },
   labelActive: {
-    color: theme.color.onPrimary,
+    color: theme.color.neonYellow,
     fontFamily: theme.font.label,
   },
 });

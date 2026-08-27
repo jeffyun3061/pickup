@@ -1,8 +1,9 @@
 import { Image, StyleSheet, View } from 'react-native';
 
-import { resolveImage, type AppImageName } from '@/src/assets/images';
+import { useCatalogImage } from '@/src/assets/useCatalogImage';
 import { AppHeader } from '@/src/components/AppHeader';
 import { AppText } from '@/src/components/AppText';
+import { OfflineBanner } from '@/src/components/OfflineBanner';
 import { Screen } from '@/src/components/Screen';
 import { EmptyState, LoadingState } from '@/src/components/StateBlocks';
 import type { RankingRow } from '@/src/domain/models';
@@ -18,8 +19,7 @@ function PodiumAvatar({
   size: number;
   borderColor: string;
 }) {
-  const local = resolveImage(row.imageKey as AppImageName | undefined);
-  const src = row.imageUrl ? { uri: row.imageUrl } : local;
+  const { source: src, isFallback, onError } = useCatalogImage(row.imageUrl, row.imageKey);
   return (
     <View
       style={[
@@ -33,7 +33,18 @@ function PodiumAvatar({
       ]}
     >
       {src ? (
-        <Image source={src} style={styles.avatarImg} resizeMode="cover" />
+        <>
+          <Image
+            source={src}
+            style={styles.avatarImg}
+            resizeMode="cover"
+            blurRadius={isFallback && row.themedFallback ? 3 : 0}
+            onError={onError}
+          />
+          {isFallback && row.themedFallback ? (
+            <View style={[styles.mockTint, { backgroundColor: row.color }]} />
+          ) : null}
+        </>
       ) : (
         <View style={[styles.avatarFallback, { backgroundColor: row.color }]}>
           <AppText style={styles.initial}>{row.initial}</AppText>
@@ -43,24 +54,51 @@ function PodiumAvatar({
   );
 }
 
+function RankingAvatar({ row }: { row: RankingRow }) {
+  const { source, isFallback, onError } = useCatalogImage(row.imageUrl, row.imageKey);
+  return (
+    <View style={styles.rowAvatar}>
+      {source ? (
+        <>
+          <Image
+            source={source}
+            style={styles.rowImg}
+            resizeMode="cover"
+            blurRadius={isFallback && row.themedFallback ? 3 : 0}
+            onError={onError}
+          />
+          {isFallback && row.themedFallback ? (
+            <View style={[styles.mockTint, { backgroundColor: row.color }]} />
+          ) : null}
+        </>
+      ) : (
+        <View style={[styles.rowFallback, { backgroundColor: row.color }]}>
+          <AppText style={styles.initial}>{row.initial}</AppText>
+        </View>
+      )}
+    </View>
+  );
+}
+
 /** 시안 ranking — 포디움 + 순위표 */
 export default function RankingScreen() {
-  const { loading, rankings } = useCatalog();
+  const { loading, refreshing, offline, lastUpdatedAt, rankings, refresh } = useCatalog();
   const top1 = rankings.find((r) => r.rank === 1);
   const top2 = rankings.find((r) => r.rank === 2);
   const top3 = rankings.find((r) => r.rank === 3);
   const rest = rankings.filter((r) => r.rank > 3);
 
   return (
-    <Screen>
-      <AppHeader title="RANKING" />
+    <Screen refreshing={refreshing} onRefresh={() => void refresh()}>
+      <AppHeader title="랭킹" />
+      {offline ? <OfflineBanner lastUpdatedAt={lastUpdatedAt} onRetry={() => void refresh()} /> : null}
       <View style={styles.hero}>
         <AppText variant="display" style={styles.title}>
           오늘의 PICK
         </AppText>
         <View style={styles.liveRow}>
           <View style={styles.liveDot} />
-          <AppText variant="label">실시간 데일리 랭킹</AppText>
+          <AppText variant="label">관심 게임 등록 수 기준</AppText>
         </View>
       </View>
 
@@ -70,7 +108,7 @@ export default function RankingScreen() {
         <EmptyState
           icon="trophy-outline"
           title="랭킹 데이터가 아직 없어요"
-          description="사용자 관심 등록이 쌓이고 서버 집계가 연결되면 포디움·순위표가 채워집니다."
+          description="관심 게임 등록이 쌓이면 서버 집계로 순위표가 채워져요."
         />
       ) : null}
 
@@ -130,21 +168,10 @@ export default function RankingScreen() {
         </View>
       ) : null}
 
-      {rest.map((row) => {
-        const local = resolveImage(row.imageKey as AppImageName | undefined);
-        const src = row.imageUrl ? { uri: row.imageUrl } : local;
-        return (
+      {rest.map((row) => (
           <View key={row.gameId} style={styles.row}>
             <AppText style={styles.rank}>{row.rank}</AppText>
-            <View style={styles.rowAvatar}>
-              {src ? (
-                <Image source={src} style={styles.rowImg} resizeMode="cover" />
-              ) : (
-                <View style={[styles.rowFallback, { backgroundColor: row.color }]}>
-                  <AppText style={styles.initial}>{row.initial}</AppText>
-                </View>
-              )}
-            </View>
+            <RankingAvatar row={row} />
             <View style={{ flex: 1, minWidth: 0 }}>
               <AppText variant="subtitle" numberOfLines={1}>
                 {row.gameName}
@@ -154,8 +181,7 @@ export default function RankingScreen() {
               </AppText>
             </View>
           </View>
-        );
-      })}
+        ))}
     </Screen>
   );
 }
@@ -207,6 +233,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.color.surfaceContainerHigh,
   },
   avatarImg: { width: '100%', height: '100%' },
+  mockTint: {
+    ...StyleSheet.absoluteFill,
+    opacity: 0.34,
+  },
   avatarFallback: {
     flex: 1,
     alignItems: 'center',

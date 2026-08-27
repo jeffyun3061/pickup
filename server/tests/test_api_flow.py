@@ -31,6 +31,7 @@ def test_admin_publish_and_public_read(client) -> None:
             "kind": "update",
             "title": "패치 노트",
             "summary_points": ["밸런스", "버그 수정"],
+            "official_url": "https://example.com/patch",
             "status": "draft",
         },
     )
@@ -66,6 +67,23 @@ def test_admin_publish_and_public_read(client) -> None:
     public_list = c.get("/api/v1/contents").json()
     assert len(public_list) == 1
     assert public_list[0]["title"] == "패치 노트"
+    assert len(c.get("/api/v1/contents?limit=1").json()) == 1
+    assert c.get("/api/v1/contents?limit=0").status_code == 422
+    too_many_game_filters = ",".join(f"g_{i}" for i in range(9))
+    assert (
+        c.get(f"/api/v1/contents?scope=mine&game_ids={too_many_game_filters}").status_code
+        == 422
+    )
+
+    # 카탈로그에서 게임을 비활성화하면 관리자 기록은 남기되
+    # 모바일 공개 피드에서는 해당 게임의 발행물을 숨긴다.
+    hidden = c.patch(
+        f"/api/v1/admin/games/{game_id}",
+        headers=headers,
+        json={"is_active": False},
+    )
+    assert hidden.status_code == 200
+    assert c.get("/api/v1/contents").json() == []
 
 
 def test_ingest_draft_only_and_idempotent(client) -> None:

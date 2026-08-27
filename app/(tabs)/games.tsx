@@ -1,5 +1,5 @@
 import { router, type Href } from 'expo-router';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   Modal,
@@ -10,54 +10,54 @@ import {
   type NativeSyntheticEvent,
   type ViewToken,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import { AppHeader } from '@/src/components/AppHeader';
 import { AppText } from '@/src/components/AppText';
-import { GameRegisterSlot } from '@/src/components/GameRegisterSlot';
 import { GameTile } from '@/src/components/GameTile';
+import { GameRegisterSlot } from '@/src/components/GameRegisterSlot';
 import { PickSquadCard } from '@/src/components/PickSquadCard';
 import { Screen } from '@/src/components/Screen';
 import { EmptyState, LoadingState } from '@/src/components/StateBlocks';
-import { MAX_SELECTED_GAMES, type Game } from '@/src/domain/models';
+import {
+  countUnreadByGame,
+  MAX_SELECTED_GAMES,
+  reconcileGameIds,
+  type Game,
+} from '@/src/domain/models';
+import {
+  chunkPickSlots,
+  PICK_SLOTS_PER_PAGE,
+  type PickSlot,
+} from '@/src/domain/pickSlots';
 import { useCatalog } from '@/src/hooks/useCatalog';
+import { readStore, useIdSet } from '@/src/state/idSetStore';
 import { useApp } from '@/src/state/AppProvider';
+import { resolvePickGrid } from '@/src/theme/layout';
 import { theme } from '@/src/theme/tokens';
-
-const SLOTS_PER_PAGE = 4;
-
-type Slot =
-  | { kind: 'game'; game: Game }
-  | { kind: 'register'; key: string };
-
-function chunkSlots(slots: Slot[], size: number): Slot[][] {
-  if (slots.length === 0) {
-    return [
-      Array.from({ length: size }, (_, i) => ({
-        kind: 'register' as const,
-        key: `r-empty-${i}`,
-      })),
-    ];
-  }
-  const pages: Slot[][] = [];
-  for (let i = 0; i < slots.length; i += size) {
-    const page = slots.slice(i, i + size);
-    while (page.length < size) {
-      page.push({ kind: 'register', key: `r-pad-${i}-${page.length}` });
-    }
-    pages.push(page);
-  }
-  return pages;
-}
 
 /** 시안 my_pick — 2×2(4칸) 페이지 + 가로 스와이프 + 게임 등록 슬롯 */
 export default function GamesScreen() {
   const { preferences, setGameIds } = useApp();
-  const { loading, games, content } = useCatalog();
+  const { loading, offline, games, content } = useCatalog();
+  const readIds = useIdSet(readStore);
   const [trackWidth, setTrackWidth] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const pagerRef = useRef<FlatList<PickSlot[]> | null>(null);
 
   const selected = preferences.gameIds;
+  const selectedKey = selected.join(',');
+  const availableGameIdsKey = games.map((game) => game.id).join(',');
+
+  // 오래된 설치에 남은 retired/삭제 게임을 API 성공 시에만 정리한다.
+  // offline 캐시에서는 서버가 최신 카탈로그인지 알 수 없으므로 선택을 보존한다.
+  useEffect(() => {
+    if (loading || offline) return;
+    const reconciled = reconcileGameIds(selected, games.map((game) => game.id));
+    if (reconciled.join(',') !== selectedKey) void setGameIds(reconciled);
+  }, [availableGameIdsKey, loading, offline, selectedKey, setGameIds]);
+
   const selectedGames = useMemo(
     () => selected.map((id) => games.find((g) => g.id === id)).filter(Boolean) as Game[],
     [selected, games],
@@ -67,27 +67,30 @@ export default function GamesScreen() {
     [games, selected],
   );
 
-  const pages = useMemo(() => {
-    const slots: Slot[] = selectedGames.map((game) => ({ kind: 'game', game }));
-    const registerCount =
-      availableGames.length === 0
-        ? selectedGames.length === 0
-          ? SLOTS_PER_PAGE
-          : 0
-        : Math.max(availableGames.length, selectedGames.length === 0 ? SLOTS_PER_PAGE : 1);
-    for (let i = 0; i < registerCount; i += 1) {
-      slots.push({ kind: 'register', key: `r-${i}` });
-    }
-    return chunkSlots(slots, SLOTS_PER_PAGE);
-  }, [selectedGames, availableGames.length]);
+  const pages = useMemo(
+    () => chunkPickSlots(selectedGames, PICK_SLOTS_PER_PAGE),
+    [selectedGames],
+  );
+  const pickGrid = useMemo(() => resolvePickGrid(trackWidth), [trackWidth]);
 
-  const newsCountByGame = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const item of content) {
-      map.set(item.gameId, (map.get(item.gameId) ?? 0) + 1);
+  // 게임을 해제해 페이지 수가 줄어도 스크롤 인디케이터가 유효한 페이지를 가리키게 한다.
+  useEffect(() => {
+    const nextPage = Math.min(pageIndex, Math.max(0, pages.length - 1));
+    if (nextPage !== pageIndex) setPageIndex(nextPage);
+    if (trackWidth > 0) {
+      requestAnimationFrame(() => {
+        pagerRef.current?.scrollToOffset({
+          offset: nextPage * trackWidth,
+          animated: false,
+        });
+      });
     }
-    return map;
-  }, [content]);
+  }, [pages.length, trackWidth]);
+
+  const unreadCountByGame = useMemo(
+    () => countUnreadByGame(content, readIds),
+    [content, readIds],
+  );
 
   const removeGame = async (id: string) => {
     await setGameIds(selected.filter((x) => x !== id));
@@ -96,8 +99,10 @@ export default function GamesScreen() {
   const addGame = async (id: string) => {
     if (selected.includes(id)) return;
     if (selected.length >= MAX_SELECTED_GAMES) return;
-    await setGameIds([...selected, id]);
+    // 선택 피드백은 로컬 상태로 즉시 반영한다. 서버 동기화가 느리거나
+    // 오프라인이어도 선택창이 남아 사용자가 추가 실패로 오해하지 않게 한다.
     setPickerOpen(false);
+    await setGameIds([...selected, id]);
   };
 
   const onMomentumEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -114,14 +119,27 @@ export default function GamesScreen() {
   ).current;
 
   return (
-    <Screen scroll={false} contentStyle={styles.screenBody}>
+    <Screen contentStyle={styles.screenBody}>
       <AppHeader title="마이픽" />
       <View style={styles.featureIntro}>
         <View style={styles.featureTitleLine}>
           <AppText style={styles.featureTitle}>MY PICK</AppText>
-          <AppText variant="data" style={styles.featureCount}>
-            {selected.length}/{MAX_SELECTED_GAMES} GAMES
-          </AppText>
+          <View style={styles.featureActions}>
+            <AppText variant="data" style={styles.featureCount}>
+              {selected.length}/{MAX_SELECTED_GAMES} GAMES
+            </AppText>
+            {selected.length < MAX_SELECTED_GAMES ? (
+              <Pressable
+                onPress={() => setPickerOpen(true)}
+                accessibilityRole="button"
+                accessibilityLabel="게임 추가"
+                hitSlop={8}
+                style={({ pressed }) => [styles.addButton, pressed && { opacity: 0.72 }]}
+              >
+                <Ionicons name="add" size={18} color={theme.color.onPrimary} />
+              </Pressable>
+            ) : null}
+          </View>
         </View>
         <AppText variant="caption" numberOfLines={1}>
           {selected.length === 0
@@ -142,13 +160,14 @@ export default function GamesScreen() {
 
       {!loading && games.length > 0 ? (
         <View
-          style={styles.pagerWrap}
+          style={[styles.pagerWrap, { height: pickGrid.pagerHeight }]}
           onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
         >
           {trackWidth > 0 ? (
             <FlatList
+              ref={pagerRef}
               data={pages}
-              style={styles.pager}
+              style={[styles.pager, { height: pickGrid.gridHeight }]}
               keyExtractor={(_, index) => `page-${index}`}
               horizontal
               pagingEnabled
@@ -163,26 +182,23 @@ export default function GamesScreen() {
                 index,
               })}
               renderItem={({ item: page }) => (
-                <View style={[styles.page, { width: trackWidth }]}>
-                  <View style={styles.grid}>
+                <View style={[styles.page, { width: trackWidth, height: pickGrid.gridHeight }]}>
+                  <View style={[styles.grid, { height: pickGrid.gridHeight }]}>
                     {page.map((slot) => (
                       <View
                         key={slot.kind === 'game' ? slot.game.id : slot.key}
-                        style={styles.cell}
+                        style={[styles.cell, { height: pickGrid.cardHeight }]}
                       >
                         {slot.kind === 'game' ? (
                           <PickSquadCard
                             game={slot.game}
                             selected
-                            hasNew={(newsCountByGame.get(slot.game.id) ?? 0) > 0}
+                            hasNew={(unreadCountByGame.get(slot.game.id) ?? 0) > 0}
                             onPress={() => router.push(`/game/${slot.game.id}` as Href)}
                             onRemove={() => void removeGame(slot.game.id)}
                           />
                         ) : (
-                          <GameRegisterSlot
-                            disabled={availableGames.length === 0}
-                            onPress={() => setPickerOpen(true)}
-                          />
+                          <GameRegisterSlot onPress={() => setPickerOpen(true)} />
                         )}
                       </View>
                     ))}
@@ -197,9 +213,6 @@ export default function GamesScreen() {
               <View key={`dot-${i}`} style={[styles.dot, i === pageIndex && styles.dotActive]} />
             ))}
           </View>
-          <AppText variant="data" style={styles.hint}>
-            빈 칸에서 게임 등록 · − 버튼으로 내 게임 해제
-          </AppText>
         </View>
       ) : null}
 
@@ -276,28 +289,37 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: theme.color.neonYellow,
   },
+  featureActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  addButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.color.primaryContainer,
+  },
   pagerWrap: {
-    height: 595,
+    // 카드 2×2와 페이지 점만 포함하고, 안내 문구를 위한 여백은 만들지 않는다.
   },
   pager: {
-    height: 530,
     flexGrow: 0,
   },
   page: {
-    height: 530,
   },
   grid: {
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    alignContent: 'space-between',
+    alignContent: 'flex-start',
     gap: 12,
-    height: 530,
   },
   cell: {
     width: '48%',
-    height: '48%',
   },
   dots: {
     flexDirection: 'row',
@@ -320,11 +342,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: theme.color.neonYellow,
     borderColor: theme.color.neonYellow,
-  },
-  hint: {
-    textAlign: 'center',
-    marginTop: 8,
-    color: theme.color.textMuted,
   },
   modalBackdrop: {
     flex: 1,

@@ -1,0 +1,140 @@
+name: GamePickup CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  frontend:
+    name: 모바일 타입·단위 테스트
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 운영 npm 의존성 보안 감사
+        run: npm audit --omit=dev --audit-level=high
+      - run: npm run verify
+      - name: 운영 API 주소 사전검사 계약
+        run: npm run release:check
+        env:
+          EXPO_PUBLIC_CATALOG_MODE: api
+          EXPO_PUBLIC_API_URL: https://ci.gamepickup.dev
+          RELEASE_PREFLIGHT_ALLOW_TEST_HOST: '1'
+      - name: Android 운영 권한 최소화 확인
+        run: |
+          # tools:node="remove" 선언은 라이브러리의 자동 병합을 막는 정책이고,
+          # 실제 운영 권한 선언만 실패로 처리한다.
+          if grep -E '<uses-permission[^>]*(READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|SYSTEM_ALERT_WINDOW)' android/app/src/main/AndroidManifest.xml | grep -v 'tools:node="remove"'; then
+            echo '운영 매니페스트에 debug/저장소 권한이 포함되어 있습니다.'
+            exit 1
+          fi
+
+  admin:
+    name: 관리자 웹 빌드
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: admin/package-lock.json
+      - run: npm ci
+      - name: 관리자 웹 의존성 보안 감사
+        run: npm audit --omit=dev --audit-level=high
+      - run: npm run build
+
+  android:
+    name: Android 네이티브 디버그 빌드
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Gradle 디버그 APK 빌드
+        run: bash ./gradlew :app:assembleDebug --no-daemon --stacktrace
+        env:
+          # CI 디버그 APK는 화면·네이티브 통합 검증용이며 운영 API를 포함하지 않는다.
+          EXPO_PUBLIC_CATALOG_MODE: preview
+        working-directory: android
+
+  backend:
+    name: API·수집기 테스트
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: server/requirements-dev.txt
+      - run: python -m pip install -r server/requirements-dev.txt
+      - run: python -m pip install -r collector/requirements.txt
+      - run: python -m pip_audit -r server/requirements-dev.txt --strict
+      - run: python -m pip_audit -r collector/requirements.txt --strict
+      - name: PostgreSQL 전체 테스트
+        run: python scripts/run_tests_pg.py
+        working-directory: server
+      - run: python -m pytest -q collector/tests
+        env:
+          PYTHONPATH: .
+
+  deploy-images:
+    name: Railway 배포 이미지 빌드
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: API 이미지 빌드
+        run: docker build --tag gamepickup-api:ci .
+      - name: API 이미지 생존 스모크
+        run: |
+          set -euo pipefail
+          network=gamepickup-ci
+          docker network create "$network"
+          trap 'docker rm --force gamepickup-api-ci gamepickup-postgres-ci >/dev/null 2>&1 || true; docker network rm "$network" >/dev/null 2>&1 || true' EXIT
+          docker run --detach --rm --name gamepickup-postgres-ci --network "$network" \
+            --env POSTGRES_DB=gamepickup \
+            --env POSTGRES_USER=gamepickup \
+            --env POSTGRES_PASSWORD=gamepickup_dev \
+            postgres:16-alpine
+          postgres_ready=false
+          for attempt in $(seq 1 30); do
+            if docker exec gamepickup-postgres-ci pg_isready -U gamepickup -d gamepickup >/dev/null 2>&1; then
+              postgres_ready=true
+              break
+            fi
+            sleep 1
+          done
+          if [ "$postgres_ready" != true ]; then
+            docker logs gamepickup-postgres-ci
+            exit 1
+          fi
+          docker run --detach --rm --name gamepickup-api-ci --network "$network" \
+            --env DATABASE_URL=postgresql+psycopg://gamepickup:gamepickup_dev@gamepickup-postgres-ci:5432/gamepickup \
+            --env ENV=development \
+            --env SCHEDULER_ENABLED=false \
+            --publish 18000:8000 gamepickup-api:ci
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:18000/health/live >/dev/null; then
+              if curl --fail --silent http://127.0.0.1:18000/health/ready >/dev/null; then
+                echo "API live/readiness container health checks passed"
+                exit 0
+              fi
+            fi
+            sleep 1
+          done
+          docker logs gamepickup-api-ci
+          exit 1
+      - name: collector 이미지 빌드
+        run: docker build --tag gamepickup-collector:ci --file Dockerfile.collector .

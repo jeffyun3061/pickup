@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { resolveLayout } from '@/src/theme/layout';
+import { resolveLayout, resolvePickGrid } from '@/src/theme/layout';
 
 describe('resolveLayout', () => {
   it('uses compact scale under 380dp (e.g. 360)', () => {
@@ -26,5 +26,25 @@ describe('resolveLayout', () => {
     expect(layout.margin).toBe(24);
     expect(layout.feedThumb).toBe(96);
     expect(layout.homeFeedThumb).toBe(100);
+  });
+
+  it('keeps the 2x2 pick grid within readable bounds across phone widths', () => {
+    const compact = resolvePickGrid(328);
+    const regular = resolvePickGrid(353);
+    const large = resolvePickGrid(364);
+
+    expect(compact.cardHeight).toBeGreaterThanOrEqual(188);
+    expect(compact.gridHeight).toBe(compact.cardHeight * 2 + 10);
+    expect(regular.cardHeight).toBeGreaterThan(compact.cardHeight);
+    expect(large.cardHeight).toBeLessThanOrEqual(260);
+    expect(large.pagerHeight).toBe(large.gridHeight + 40);
+  });
+
+  it('uses a safe fallback before the pager has measured its width', () => {
+    expect(resolvePickGrid(0)).toEqual({
+      cardHeight: 220,
+      gridHeight: 452,
+      pagerHeight: 492,
+    });
   });
 });

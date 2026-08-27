@@ -13,8 +13,13 @@ import {
   defaultPreferences,
   preferencesStore,
 } from '@/src/data/preferencesStore';
-import { syncInstallationPreferences } from '@/src/data/installationApi';
+import {
+  revokeInstallation,
+  syncInstallationPreferences,
+} from '@/src/data/installationApi';
+import { clearCatalogSnapshot } from '@/src/data/catalogCache';
 import { normalizeGameIds, type Preferences } from '@/src/domain/models';
+import { bookmarkStore, readStore } from '@/src/state/idSetStore';
 
 type AppContextValue = {
   ready: boolean;
@@ -66,15 +71,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const completeOnboarding = useCallback(async (gameIds: string[]) => {
-    await persistAndSync({
+    const next = {
       ...preferences,
       onboardingCompleted: true,
       gameIds: normalizeGameIds(gameIds),
-    });
+    };
+    await persistAndSync(next);
+    void bootstrapInstallationChannel(next);
   }, [preferences, persistAndSync]);
 
   const setGameIds = useCallback(async (gameIds: string[]) => {
-    await persistAndSync({ ...preferences, gameIds: normalizeGameIds(gameIds) });
+    const next = { ...preferences, gameIds: normalizeGameIds(gameIds) };
+    await persistAndSync(next);
+    if (next.onboardingCompleted && next.gameIds.length > 0) {
+      void bootstrapInstallationChannel(next);
+    }
   }, [preferences, persistAndSync]);
 
   const setNotifications = useCallback(
@@ -85,8 +96,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const resetLocalData = useCallback(async () => {
+    // 네트워크가 끊겨도 revokeInstallation 내부 1.5초 타임아웃 뒤에는
+    // 로컬 데이터를 항상 삭제한다. 해지 함수가 credential도 정리한다.
+    await revokeInstallation().catch(() => undefined);
     setPreferences(defaultPreferences);
     await preferencesStore.clear();
+    bookmarkStore.clear();
+    readStore.clear();
+    await clearCatalogSnapshot();
   }, []);
 
   const value = useMemo(

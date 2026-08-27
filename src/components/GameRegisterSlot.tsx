@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { AppText } from '@/src/components/AppText';
 import { theme } from '@/src/theme/tokens';
 
 type Props = {
@@ -34,9 +33,6 @@ export function GameRegisterSlot({ onPress, disabled }: Props) {
           color={disabled ? theme.color.outline : theme.color.onSurfaceVariant}
         />
       </View>
-      <AppText style={[styles.label, disabled && { color: theme.color.outline }]}>
-        게임 등록
-      </AppText>
     </Pressable>
   );
 }
@@ -52,7 +48,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(32,31,32,0.35)',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
   },
   pressed: {
     borderColor: 'rgba(255,215,0,0.55)',
@@ -69,11 +64,5 @@ const styles = StyleSheet.create({
     borderColor: theme.color.outlineVariant,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  label: {
-    fontFamily: theme.font.label,
-    fontSize: 12,
-    letterSpacing: 1,
-    color: theme.color.onSurfaceVariant,
   },
 });

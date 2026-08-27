@@ -45,7 +45,7 @@ export default function InquiryScreen() {
 
   return (
     <Screen>
-      <AppHeader showBack brand title="INQUIRY" rightSlot={null} />
+      <AppHeader showBack brand title="문의하기" rightSlot={null} />
       <AppText variant="display" style={styles.hero}>
         문의하기
       </AppText>

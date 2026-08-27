@@ -32,7 +32,7 @@ export default function AnnouncementDetailScreen() {
   if (loading) {
     return (
       <Screen>
-        <AppHeader showBack brand title="NOTICE" />
+        <AppHeader showBack brand title="공지" />
         <LoadingState />
       </Screen>
     );
@@ -41,7 +41,7 @@ export default function AnnouncementDetailScreen() {
   if (!item) {
     return (
       <Screen>
-        <AppHeader showBack brand title="NOTICE" />
+        <AppHeader showBack brand title="공지" />
         <EmptyState title="공지를 찾을 수 없어요" description="잘못된 링크입니다." />
       </Screen>
     );
@@ -49,7 +49,7 @@ export default function AnnouncementDetailScreen() {
 
   return (
     <Screen>
-      <AppHeader showBack brand title="NOTICE" />
+      <AppHeader showBack brand title="공지" />
       <View style={styles.card}>
         <AppText variant="display">{item.title}</AppText>
         <AppText variant="data">발행 {formatKstDate(item.publishedAt)}</AppText>

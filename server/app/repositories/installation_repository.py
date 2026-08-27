@@ -54,3 +54,7 @@ class InstallationRepository:
         self.db.add(token)
         self.db.flush()
         return token
+
+    def delete_token(self, token: DeviceToken) -> None:
+        self.db.delete(token)
+        self.db.flush()

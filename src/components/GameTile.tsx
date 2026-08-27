@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
-import { resolveImage, type AppImageName } from '@/src/assets/images';
+import { useCatalogImage } from '@/src/assets/useCatalogImage';
 import { AppText } from '@/src/components/AppText';
 import type { Game } from '@/src/domain/models';
 import { theme } from '@/src/theme/tokens';
@@ -14,8 +14,10 @@ type Props = {
 
 /** 마이 픽 / 온보딩 선택 타일 — 커버 이미지 + 이니셜 폴백 */
 export function GameTile({ game, selected, onPress }: Props) {
-  const local = resolveImage(game.imageKey as AppImageName | undefined);
-  const cover = game.imageUrl ? { uri: game.imageUrl } : local;
+  const { source: cover, isFallback, onError: onImageError } = useCatalogImage(
+    game.imageUrl,
+    game.imageKey,
+  );
 
   return (
     <Pressable
@@ -31,7 +33,29 @@ export function GameTile({ game, selected, onPress }: Props) {
     >
       <View style={styles.coverWrap}>
         {cover ? (
-          <Image source={cover} style={styles.cover} resizeMode="cover" />
+          <>
+            <View
+              pointerEvents="none"
+              style={[styles.coverPlaceholder, { backgroundColor: game.color || theme.color.surfaceContainerHighest }]}
+            >
+              <AppText style={styles.placeholderInitial}>
+                {game.initial || game.name.slice(0, 1)}
+              </AppText>
+            </View>
+            <Image
+              source={cover}
+              style={styles.cover}
+              resizeMode="cover"
+              blurRadius={isFallback && game.themedFallback ? 3 : 0}
+              onError={onImageError}
+            />
+            {isFallback && game.themedFallback ? (
+              <View
+                pointerEvents="none"
+                style={[styles.mockTint, { backgroundColor: game.color }]}
+              />
+            ) : null}
+          </>
         ) : (
           <View
             style={[
@@ -85,6 +109,20 @@ const styles = StyleSheet.create({
   cover: {
     width: '100%',
     height: '100%',
+  },
+  coverPlaceholder: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  placeholderInitial: {
+    fontFamily: theme.font.headline,
+    color: 'rgba(255,255,255,0.82)',
+    fontSize: 28,
+  },
+  mockTint: {
+    ...StyleSheet.absoluteFill,
+    opacity: 0.34,
   },
   coverFallback: {
     flex: 1,

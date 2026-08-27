@@ -19,19 +19,29 @@ class CatalogService:
         self.announcements = AnnouncementRepository(db)
 
     def list_games(self) -> list[GameOut]:
-        return [game_to_out(g) for g in self.games.list_active()]
+        rows = self.games.list_active_with_interest_counts()
+        return [game_to_out(game, count, public=True) for game, count in rows]
 
-    def list_contents(self, scope: str, game_ids: list[str]) -> list[ContentOut]:
+    def list_contents(
+        self,
+        scope: str,
+        game_ids: list[str],
+        *,
+        limit: int = 100,
+    ) -> list[ContentOut]:
         if scope == "mine":
             if not game_ids:
                 return []
-            rows = self.contents.list_published(game_ids)
+            rows = self.contents.list_published(game_ids, limit=limit)
         else:
-            rows = self.contents.list_published(None)
+            rows = self.contents.list_published(None, limit=limit)
         return [content_to_out(c) for c in rows]
 
     def list_rankings(self) -> list[RankingOut]:
-        return rankings_from_games(self.games.list_active())
+        rows = self.games.list_active_with_interest_counts()
+        games = [game for game, _count in rows]
+        counts = {game.id: count for game, count in rows}
+        return rankings_from_games(games, counts)
 
     def list_announcements(self) -> list[AnnouncementOut]:
         return [announcement_to_out(a) for a in self.announcements.list_published()]

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
-from jose import JWTError, jwt
+import jwt
+from jwt import PyJWTError
 from passlib.context import CryptContext
 
 from app.config import get_settings
@@ -34,5 +35,5 @@ def decode_access_token(token: str) -> str | None:
         if not isinstance(sub, str) or role != "admin":
             return None
         return sub
-    except JWTError:
+    except PyJWTError:
         return None

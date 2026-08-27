@@ -50,7 +50,7 @@ export default function NewsScreen() {
       .sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
   }, [content, segment, kindFilter, query, preferences.gameIds]);
 
-  const todayCount = useMemo(() => content.filter((item) => isToday(item.publishedAt)).length, [content]);
+  const todayCount = useMemo(() => items.filter((item) => isToday(item.publishedAt)).length, [items]);
   const chips = KIND_CHIPS[segment];
 
   return (

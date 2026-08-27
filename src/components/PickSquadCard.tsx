@@ -1,42 +1,33 @@
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
-import { resolveImage, type AppImageName } from '@/src/assets/images';
+import { useCatalogImage } from '@/src/assets/useCatalogImage';
 import { AppText } from '@/src/components/AppText';
 import type { Game } from '@/src/domain/models';
 import { theme } from '@/src/theme/tokens';
 
 type Props = {
   game: Game;
-  /** 시안 배지: 새 소식 / N 알림 */
-  badgeLabel?: string;
-  badgeTone?: 'yellow' | 'purple' | 'alert';
+  /** 새 소식이 하나라도 있으면 좌측 상단 N 표시 */
+  hasNew?: boolean;
   selected?: boolean;
   onPress?: () => void;
-  onLongPress?: () => void;
+  onRemove?: () => void;
 };
 
 /** 시안 my_pick 스쿼드 카드 — 풀블리드 커버 + 하단 메타 */
 export function PickSquadCard({
   game,
-  badgeLabel,
-  badgeTone = 'yellow',
+  hasNew = false,
   selected,
   onPress,
-  onLongPress,
+  onRemove,
 }: Props) {
-  const local = resolveImage(game.imageKey as AppImageName | undefined);
-  const cover = game.imageUrl ? { uri: game.imageUrl } : local;
-  const badgeBg =
-    badgeTone === 'purple'
-      ? theme.color.neonPurple
-      : badgeTone === 'alert'
-        ? theme.color.error
-        : theme.color.primaryContainer;
-  const badgeFg =
-    badgeTone === 'purple' || badgeTone === 'alert'
-      ? '#FFFFFF'
-      : theme.color.onPrimary;
+  const { source: cover, isFallback, onError: onImageError } = useCatalogImage(
+    game.imageUrl,
+    game.imageKey,
+  );
 
   return (
     <Pressable
@@ -44,12 +35,8 @@ export function PickSquadCard({
         void Haptics.selectionAsync();
         onPress?.();
       }}
-      onLongPress={() => {
-        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        onLongPress?.();
-      }}
       accessibilityRole="button"
-      accessibilityLabel={game.name}
+      accessibilityLabel={`${game.name} 소식 보기`}
       style={({ pressed }) => [
         styles.card,
         selected && styles.selected,
@@ -57,19 +44,46 @@ export function PickSquadCard({
       ]}
     >
       {cover ? (
-        <Image source={cover} style={styles.cover} resizeMode="cover" />
+        <>
+          <Image
+            source={cover}
+            style={styles.cover}
+            resizeMode="cover"
+            blurRadius={isFallback && game.themedFallback ? 3 : 0}
+            onError={onImageError}
+          />
+          {isFallback && game.themedFallback ? (
+            <View
+              pointerEvents="none"
+              style={[styles.mockTint, { backgroundColor: game.color }]}
+            />
+          ) : null}
+        </>
       ) : (
         <View style={[styles.coverFallback, { backgroundColor: game.color }]}>
           <AppText style={styles.initial}>{game.initial}</AppText>
         </View>
       )}
       <View style={styles.scrim} />
-      {badgeLabel ? (
-        <View style={[styles.badge, { backgroundColor: badgeBg }]}>
-          <AppText style={[styles.badgeText, { color: badgeFg }]} numberOfLines={1}>
-            {badgeLabel}
-          </AppText>
+      {hasNew ? (
+        <View style={styles.newBadge}>
+          <AppText style={styles.newBadgeText}>N</AppText>
         </View>
+      ) : null}
+      {onRemove ? (
+        <Pressable
+          onPress={(event) => {
+            event.stopPropagation();
+            void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onRemove();
+          }}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={`${game.name} 마이픽에서 제거`}
+          style={({ pressed }) => [styles.removeButton, pressed && { opacity: 0.7 }]}
+        >
+          <Ionicons name="remove" size={18} color={theme.color.onSurface} />
+        </Pressable>
       ) : null}
       <View style={styles.footer}>
         <AppText style={styles.name} numberOfLines={1}>
@@ -100,6 +114,10 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     opacity: 0.72,
   },
+  mockTint: {
+    ...StyleSheet.absoluteFill,
+    opacity: 0.34,
+  },
   coverFallback: {
     ...StyleSheet.absoluteFill,
     alignItems: 'center',
@@ -114,19 +132,36 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(14,14,15,0.22)',
   },
-  badge: {
+  newBadge: {
     position: 'absolute',
     top: 10,
-    right: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 4,
+    left: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.color.neonYellow,
     zIndex: 2,
   },
-  badgeText: {
+  newBadgeText: {
     fontFamily: theme.font.label,
-    fontSize: 10,
-    letterSpacing: 0.4,
+    fontSize: 11,
+    color: theme.color.onPrimary,
+  },
+  removeButton: {
+    position: 'absolute',
+    top: 9,
+    right: 9,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(14,14,15,0.82)',
+    borderWidth: 1,
+    borderColor: 'rgba(229,226,227,0.45)',
+    zIndex: 3,
   },
   footer: {
     marginTop: 'auto',

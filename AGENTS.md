@@ -25,13 +25,18 @@ npm run android
 
 ## 백엔드
 ```powershell
-cd server
-.\.venv\Scripts\pytest -q
-.\.venv\Scripts\uvicorn app.main:app --reload --port 8000
+cd C:\Users\user\Projects\pickup\server
+.\.venv\Scripts\pip install -r requirements-dev.txt
+.\.venv\Scripts\python scripts\run_tests_pg.py
+.\.venv\Scripts\python scripts\run_local_pg_api.py
 cd ..\admin
 npm run dev
 ```
 앱 실연동: `EXPO_PUBLIC_CATALOG_MODE=api`, `EXPO_PUBLIC_API_URL=http://<host>:8000`
+
+로컬 개발은 Docker를 요구하지 않는다. `run_local_pg_api.py`가 PostgreSQL을
+`server/tmp/gamepickup-postgres`에 실행하고, Dockerfile/Compose는 CI와 운영 컨테이너
+배포 검증용으로만 사용한다.
 
 ## 원칙
 - Expo Router + TypeScript

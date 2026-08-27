@@ -48,16 +48,18 @@ export function AppHeader({
             <Ionicons name="flash" size={22} color={theme.color.neonYellow} />
           )}
           <View style={styles.titles}>
-            {brand ? (
-              <AppText style={[styles.brand, { fontSize: layout.isCompact ? 20 : 22 }]}>
-                PIKY
-              </AppText>
-            ) : null}
-            {title ? (
-              <AppText variant="data" style={styles.pageTitle} numberOfLines={1}>
-                {title}
-              </AppText>
-            ) : null}
+            <View style={styles.titleLine}>
+              {brand ? (
+                <AppText style={[styles.brand, { fontSize: layout.isCompact ? 17 : 18 }]}>
+                  게임픽업
+                </AppText>
+              ) : null}
+              {title ? (
+                <AppText style={styles.pageTitle} numberOfLines={1}>
+                  {brand ? `· ${title}` : title}
+                </AppText>
+              ) : null}
+            </View>
             {subtitle ? (
               <AppText variant="caption" numberOfLines={2}>
                 {subtitle}
@@ -108,16 +110,24 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   titles: { flex: 1, minWidth: 0, gap: 2 },
+  titleLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    minWidth: 0,
+  },
   brand: {
-    fontFamily: theme.font.headline,
+    fontFamily: theme.font.bodySemi,
     color: theme.color.neonYellow,
-    fontStyle: 'italic',
-    letterSpacing: -0.8,
+    letterSpacing: -0.4,
+    flexShrink: 0,
   },
   pageTitle: {
+    flexShrink: 1,
+    fontFamily: theme.font.bodySemi,
+    fontSize: 14,
     color: theme.color.onSurfaceVariant,
-    letterSpacing: 1.5,
-    marginTop: 2,
+    letterSpacing: -0.2,
   },
   right: {
     flexShrink: 0,

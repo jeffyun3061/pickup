@@ -6,89 +6,127 @@ import type {
 } from '@/src/domain/models';
 
 /**
- * Stitch Neon-Tactical 시안 기반 UI 미리보기 데이터.
- * - 픽션 타이틀만 사용 (실 IP 게임명·공식 로고 금지)
- * - 이미지는 design-ref HTML의 aida-public 시안 에셋
+ * 화면 검증용 미리보기 카탈로그.
+ *
+ * 게임 이름은 사용자가 선택할 실제 서비스 후보를 반영하되, 아래 소식·이미지는
+ * 공식 발행물이 아닌 UI 검증용 샘플이다. 실제 출시 전에는 각 게임의 공식 RSS/API와
+ * 사용 허가를 확인한 이미지로 API 카탈로그를 교체한다.
  */
 export const PREVIEW_GAMES: Game[] = [
   {
-    id: 'g_shadow',
-    name: '프로젝트: 섀도우',
-    initial: '섀',
-    genre: '전술 RPG',
-    color: '#2A2A2B',
-    interestCount: 12850,
-    imageKey: 'pickShadow',
+    id: 'g_honkai_star_rail',
+    name: '붕괴: 스타레일',
+    initial: '붕',
+    genre: '턴제 RPG',
+    color: '#4B4A80',
+    interestCount: 11800,
+    imageKey: 'rankCyber',
   },
   {
-    id: 'g_neon',
-    name: '네온 신디케이트',
-    initial: '네',
-    genre: '사이버펑크',
-    color: '#3A1848',
-    interestCount: 9420,
-    imageKey: 'pickNeon',
+    id: 'g_genshin_impact',
+    name: '원신',
+    initial: '원',
+    genre: '오픈월드 액션',
+    color: '#3E6B86',
+    interestCount: 10900,
+    imageKey: 'feedNeon',
   },
   {
-    id: 'g_grid',
-    name: '그리드_러너',
-    initial: '그',
-    genre: '레이싱',
-    color: '#1C2A38',
-    interestCount: 8100,
-    imageKey: 'pickGrid',
-  },
-  {
-    id: 'g_zero',
-    name: '오퍼레이션: 제로',
-    initial: '제',
-    genre: '슈터',
-    color: '#2B2418',
-    interestCount: 7540,
-    imageKey: 'feedZero',
-  },
-  {
-    id: 'g_void',
-    name: 'VOID RUNNER',
-    initial: 'V',
-    genre: '액션',
-    color: '#1A1A22',
+    id: 'g_blue_archive',
+    name: '블루 아카이브',
+    initial: '블',
+    genre: '학원 RPG',
+    color: '#2563A6',
     interestCount: 12850,
     imageKey: 'rankVoid',
   },
   {
-    id: 'g_drift',
-    name: 'NEON DRIFT',
-    initial: 'N',
-    genre: '레이싱',
-    color: '#241830',
+    id: 'g_nikke',
+    name: '니케',
+    initial: '니',
+    genre: '건슈팅 RPG',
+    color: '#6B294D',
     interestCount: 9420,
+    imageKey: 'coverTactical',
+  },
+  {
+    id: 'g_seven_knights',
+    name: '세븐나이츠',
+    initial: '세',
+    genre: '수집형 RPG',
+    color: '#6A3D28',
+    interestCount: 8100,
     imageKey: 'rankDrift',
   },
   {
-    id: 'g_cyber',
-    name: 'CYBER OPS',
-    initial: 'C',
-    genre: '전술',
-    color: '#18241C',
-    interestCount: 8100,
-    imageKey: 'rankCyber',
+    id: 'g_pokemon_go',
+    name: '포켓몬 GO',
+    initial: '포',
+    genre: 'AR 액션',
+    color: '#2F5E9A',
+    interestCount: 7540,
+    imageKey: 'feedZero',
   },
   {
-    id: 'g_clash',
-    name: 'GRID CLASH',
-    initial: 'G',
-    genre: '대전',
-    color: '#222018',
-    interestCount: 7540,
+    id: 'g_girls_frontline_2',
+    name: '소녀전선 2',
+    initial: '소',
+    genre: '전략 RPG',
+    color: '#374B68',
+    interestCount: 6100,
+    imageKey: 'rankDrift',
+  },
+  {
+    id: 'g_ihwan',
+    name: '이환',
+    initial: '이',
+    genre: '액션 RPG',
+    color: '#433B62',
+    interestCount: 4980,
     imageKey: 'rankGrid',
+  },
+  {
+    id: 'g_epic_seven',
+    name: '에픽세븐',
+    initial: '에',
+    genre: '수집형 RPG',
+    color: '#5D3A6E',
+    interestCount: 4620,
+    imageKey: 'rankSynth',
+  },
+  {
+    id: 'g_trickcal_revive',
+    name: '트릭컬 리바이브',
+    initial: '트',
+    genre: '볼따구 RPG',
+    color: '#6B4D38',
+    interestCount: 4200,
+    imageKey: 'feedShadow',
+  },
+  {
+    id: 'g_arknights',
+    name: '명일방주',
+    initial: '명',
+    genre: '전략 RPG',
+    color: '#3B454B',
+    interestCount: 3980,
+    imageKey: 'feedGrid',
+  },
+  {
+    id: 'g_umamusume',
+    name: '우마무스메',
+    initial: '우',
+    genre: '육성 시뮬레이션',
+    color: '#7A3F58',
+    interestCount: 3650,
+    imageKey: 'feedCore',
   },
 ];
 
 const now = Date.now();
 const hoursAgo = (h: number) => new Date(now - h * 3600_000).toISOString();
 
-export const PREVIEW_CONTENT: ContentItem[] = [
+const PREVIEW_CONTENT_SEED: ContentItem[] = [
   {
     id: 'c1',
     gameId: 'g_shadow',
@@ -104,6 +142,15 @@ export const PREVIEW_CONTENT: ContentItem[] = [
     publishedAt: hoursAgo(0.15),
     imageKey: 'coverTactical',
     importance: 3,
+    analysis: {
+      importance: 3,
+      impactLevel: 'high',
+      impactSummary: '새 작전과 보상 변경이 플레이 순서에 영향을 줄 수 있어요.',
+      confidence: 'medium',
+      communitySentiment: 'unknown',
+      communitySummary: '반응은 조금 더 지켜볼게요.',
+      communitySampleCount: 0,
+    },
   },
   {
     id: 'c2',
@@ -118,6 +165,15 @@ export const PREVIEW_CONTENT: ContentItem[] = [
     officialUrl: 'https://example.com/preview/neon-hotfix',
     publishedAt: hoursAgo(2),
     imageKey: 'coverOps',
+    analysis: {
+      importance: 2,
+      impactLevel: 'medium',
+      impactSummary: '매치메이킹 지연을 겪던 유저에게 도움이 될 수 있어요.',
+      confidence: 'medium',
+      communitySentiment: 'unknown',
+      communitySummary: '반응은 조금 더 지켜볼게요.',
+      communitySampleCount: 0,
+    },
   },
   {
     id: 'c3',
@@ -233,86 +289,38 @@ export const PREVIEW_CONTENT: ContentItem[] = [
   },
 ];
 
-export const PREVIEW_RANKINGS: RankingRow[] = [
-  {
-    gameId: 'g_void',
-    gameName: 'VOID RUNNER',
-    interestCount: 12850,
-    rank: 1,
-    initial: 'V',
-    color: '#1A1A22',
-    imageKey: 'rankVoid',
-  },
-  {
-    gameId: 'g_drift',
-    gameName: 'NEON DRIFT',
-    interestCount: 9420,
-    rank: 2,
-    initial: 'N',
-    color: '#241830',
-    imageKey: 'rankDrift',
-  },
-  {
-    gameId: 'g_cyber',
-    gameName: 'CYBER OPS',
-    interestCount: 8100,
-    rank: 3,
-    initial: 'C',
-    color: '#18241C',
-    imageKey: 'rankCyber',
-  },
-  {
-    gameId: 'g_clash',
-    gameName: 'GRID CLASH',
-    interestCount: 7540,
-    rank: 4,
-    initial: 'G',
-    color: '#222018',
-    imageKey: 'rankGrid',
-  },
-  {
-    gameId: 'g_neon',
-    gameName: '네온 신디케이트',
-    interestCount: 7200,
-    rank: 5,
-    initial: '네',
-    color: '#3A1848',
-    imageKey: 'rankSynth',
-  },
-  {
-    gameId: 'g_shadow',
-    gameName: '프로젝트: 섀도우',
-    interestCount: 6890,
-    rank: 6,
-    initial: '섀',
-    color: '#2A2A2B',
-    imageKey: 'feedShadow',
-  },
-  {
-    gameId: 'g_grid',
-    gameName: '그리드_러너',
-    interestCount: 6100,
-    rank: 7,
-    initial: '그',
-    color: '#1C2A38',
-    imageKey: 'feedGrid',
-  },
-  {
-    gameId: 'g_zero',
-    gameName: '오퍼레이션: 제로',
-    interestCount: 5400,
-    rank: 8,
-    initial: '제',
-    color: '#2B2418',
-    imageKey: 'feedZero',
-  },
-];
+/**
+ * 샘플 소식의 게임 연결은 카탈로그 순서로 재배치한다.
+ * 픽션 ID가 남아 선택한 실제 후보 게임에서 빈 화면이 되지 않도록 하는
+ * 미리보기 전용 변환이며, 실서비스에서는 API의 실제 game_id를 사용한다.
+ */
+export const PREVIEW_CONTENT: ContentItem[] = PREVIEW_CONTENT_SEED.map((item, index) => {
+  const game = PREVIEW_GAMES[index % PREVIEW_GAMES.length];
+  return {
+    ...item,
+    gameId: game.id,
+    gameName: game.name,
+  };
+});
 
-export const PREVIEW_ANNOUNCEMENTS: ServiceAnnouncement[] = [
-  {
-    id: 'a1',
-    title: '미리보기 모드 안내',
-    body: '지금 보이는 게임·소식은 Stitch 시안용 픽션 데이터입니다. API 연동 후 실발행 콘텐츠로 교체됩니다.',
-    publishedAt: hoursAgo(1),
-  },
-];
+/** 미리보기에서도 운영 랭킹과 동일하게 관심 등록 수를 기준으로 정렬한다. */
+export const PREVIEW_RANKINGS: RankingRow[] = [...PREVIEW_GAMES]
+  .sort(
+    (a, b) =>
+      b.interestCount - a.interestCount
+      || a.name.localeCompare(b.name, 'ko')
+      || a.id.localeCompare(b.id),
+  )
+  .map((game, index) => ({
+    gameId: game.id,
+    gameName: game.name,
+    interestCount: game.interestCount,
+    rank: index + 1,
+    initial: game.initial,
+    color: game.color,
+    imageKey: game.imageKey,
+  }));
+
+// 개발용 카탈로그가 운영 안내처럼 보이지 않도록 공지는 비워 둔다.
+// 실제 운영 공지는 API에서 관리자가 발행한 항목만 노출한다.
+export const PREVIEW_ANNOUNCEMENTS: ServiceAnnouncement[] = [];

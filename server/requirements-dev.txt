@@ -1,0 +1,8 @@
+# 개발·테스트 전용 (프로덕션 이미지에는 설치하지 않음)
+-r requirements.txt
+pytest==9.0.3
+pip-audit==2.10.1
+# Starlette 1.x TestClient의 공식 호환 HTTP 클라이언트
+httpx2==2.12.0
+# 임베디드 PostgreSQL — Docker 없이 PG 호환성 테스트 (scripts/run_tests_pg.py)
+pgserver==0.1.4

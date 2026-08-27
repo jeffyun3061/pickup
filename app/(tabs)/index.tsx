@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -16,7 +16,6 @@ import {
   eventCountdownLabel,
   formatRelativeTime,
   isActiveTimeBound,
-  timeBoundTypeLabel,
   type ContentItem,
 } from '@/src/domain/models';
 import { useCatalog } from '@/src/hooks/useCatalog';
@@ -35,6 +34,22 @@ function isToday(iso: string, now = new Date()): boolean {
 
 function isPublished(iso: string, now = new Date()): boolean {
   return +new Date(iso) <= +now;
+}
+
+/**
+ * 앱을 열어 둔 상태에서도 오늘 소식·기간 종료 문구가 날짜 경계를 따라
+ * 갱신되도록 한다. 1분 주기는 초 단위 카운트다운이 필요 없는 제품 정책과
+ * 배터리 비용 사이의 절충이며, 당겨서 새로고침은 별도로 즉시 갱신한다.
+ */
+function useCurrentTime(): Date {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return now;
 }
 
 function groupByGame(items: ContentItem[], readIds: string[], missed: boolean): NewsGroup[] {
@@ -91,15 +106,18 @@ function TodayNoNewsState({ onRefresh }: { onRefresh: () => void }) {
 }
 
 function EventPeriodCard({ item }: { item: ContentItem }) {
-  const type = item.timeBoundType ?? (item.kind === 'event' ? 'event' : item.kind === 'popup' ? 'popup' : 'goods');
+  const description = item.summaryPoints?.[0];
   return (
     <View style={styles.eventCard}>
       <View style={styles.eventTop}>
-        <View style={styles.eventBadge}><AppText style={styles.eventBadgeText}>{timeBoundTypeLabel(type)}</AppText></View>
+        <View style={styles.eventGameHeader}>
+          <View style={styles.eventDot} />
+          <AppText style={styles.eventGameName} numberOfLines={1}>{item.gameName}</AppText>
+        </View>
         <AppText style={styles.eventCountdown}>{eventCountdownLabel(item.endsAt)}</AppText>
       </View>
       <AppText style={styles.eventTitle} numberOfLines={2}>{item.title}</AppText>
-      <AppText style={styles.eventGame} numberOfLines={1}>{item.gameName}</AppText>
+      {description ? <AppText style={styles.eventDescription} numberOfLines={2}>{description}</AppText> : null}
     </View>
   );
 }
@@ -112,14 +130,24 @@ export default function HomeScreen() {
   const readIds = useIdSet(readStore);
   const [homeTab, setHomeTab] = useState<HomeTab>('news');
   const selectedCount = preferences.gameIds.length;
-  const now = new Date();
-  const previewBrowse = (catalogMode === 'preview' || catalogMode === 'api') && selectedCount === 0 && content.length > 0;
+  const now = useCurrentTime();
+  // 실서비스 API 모드에서는 관심 게임을 고르기 전 전체 소식을 노출하지 않는다.
+  // preview 모드에서만 시안 확인을 위해 전체 피드를 보여준다.
+  const previewBrowse = catalogMode === 'preview' && selectedCount === 0 && content.length > 0;
   const source = selectedCount > 0 ? mine : previewBrowse ? content : [];
   const todayItems = useMemo(() => source.filter((item) => isPublished(item.publishedAt, now) && isToday(item.publishedAt, now)), [source, now.getTime()]);
   const missedItems = useMemo(() => source.filter((item) => isPublished(item.publishedAt, now) && !isToday(item.publishedAt, now) && !readIds.includes(item.id)), [source, readIds, now.getTime()]);
   const todayGroups = useMemo(() => groupByGame(todayItems, readIds, false), [todayItems, readIds]);
   const missedGroups = useMemo(() => groupByGame(missedItems, readIds, true), [missedItems, readIds]);
-  const events = useMemo(() => source.filter((item) => isActiveTimeBound(item, now)).sort((a, b) => +new Date(a.endsAt ?? 0) - +new Date(b.endsAt ?? 0)), [source, now.getTime()]);
+  const events = useMemo(
+    () =>
+      source
+        // 일반 공지의 날짜는 게시/적용 시각일 수 있다. 이벤트 기간 탭에는
+        // 실제 기간형 콘텐츠만 노출해 공지와 기간 콘텐츠의 의미를 섞지 않는다.
+        .filter((item) => item.kind !== 'update' && isActiveTimeBound(item, now))
+        .sort((a, b) => +new Date(a.endsAt ?? 0) - +new Date(b.endsAt ?? 0)),
+    [source, now.getTime()],
+  );
   const hasHomeNews = todayGroups.length > 0 || missedGroups.length > 0;
   const popularGames = useMemo(() => [...games].sort((a, b) => b.interestCount - a.interestCount).slice(0, 3), [games]);
 
@@ -163,7 +191,7 @@ const styles = StyleSheet.create({
   segmentWrap: { flexDirection: 'row', padding: 4, gap: 4, backgroundColor: theme.color.surfaceContainerHigh, borderWidth: 1, borderColor: theme.color.outlineVariant, borderRadius: theme.radius.sm, marginBottom: 13 }, segmentItem: { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 4 }, segmentItemActive: { backgroundColor: theme.color.primaryContainer }, segmentText: { fontFamily: theme.font.bodySemi, fontSize: 13, color: theme.color.textMuted }, segmentTextActive: { color: theme.color.onPrimary },
   group: { marginBottom: 12 },
   moreItems: { marginTop: -2, marginBottom: 3, backgroundColor: theme.color.surfaceContainer, borderBottomLeftRadius: theme.radius.xl, borderBottomRightRadius: theme.radius.xl, paddingHorizontal: 12, paddingBottom: 4 }, moreItem: { flexDirection: 'row', alignItems: 'center', minHeight: 38, gap: 8, borderTopWidth: 1, borderTopColor: theme.color.outlineVariant }, moreItemRead: { opacity: 0.56 }, moreItemPressed: { opacity: 0.7 }, moreDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: theme.color.textMuted }, moreTitle: { flex: 1, minWidth: 0, fontFamily: theme.font.body, fontSize: 13, color: theme.color.onSurface }, moreTime: { fontFamily: theme.font.body, fontSize: 11, color: theme.color.textMuted }, missedSection: { marginTop: 4 }, subHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 }, subTitle: { fontFamily: theme.font.bodySemi, fontSize: 16, color: theme.color.onSurface }, subCount: { fontFamily: theme.font.body, fontSize: 12, color: theme.color.textMuted },
-  eventCard: { marginBottom: 10, padding: 15, borderRadius: theme.radius.xl, backgroundColor: theme.color.surfaceContainer, borderWidth: 1, borderColor: theme.color.outlineVariant }, eventTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }, eventBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 5, backgroundColor: 'rgba(190,124,255,0.16)' }, eventBadgeText: { fontFamily: theme.font.bodySemi, fontSize: 11, color: theme.color.neonPurple }, eventCountdown: { fontFamily: theme.font.bodySemi, fontSize: 12, color: theme.color.neonYellow }, eventTitle: { fontFamily: theme.font.bodySemi, fontSize: 16, lineHeight: 22, color: theme.color.onSurface }, eventGame: { fontFamily: theme.font.body, fontSize: 12, color: theme.color.textMuted, marginTop: 5 },
+  eventCard: { marginBottom: 10, padding: 15, borderRadius: theme.radius.xl, backgroundColor: theme.color.surfaceContainer, borderWidth: 1, borderColor: theme.color.outlineVariant }, eventTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }, eventGameHeader: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: 7 }, eventDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: theme.color.neonPurple }, eventGameName: { flex: 1, minWidth: 0, fontFamily: theme.font.bodySemi, fontSize: 14, color: theme.color.onSurface }, eventCountdown: { marginLeft: 10, fontFamily: theme.font.bodySemi, fontSize: 12, color: theme.color.neonYellow }, eventTitle: { fontFamily: theme.font.bodySemi, fontSize: 16, lineHeight: 22, color: theme.color.onSurface }, eventDescription: { marginTop: 5, fontFamily: theme.font.body, fontSize: 13, lineHeight: 19, color: theme.color.textMuted },
   noNewsPanel: { alignItems: 'center', gap: 10, padding: 20, marginTop: 12, backgroundColor: 'rgba(32, 31, 32, 0.85)', borderWidth: 1, borderColor: theme.color.outlineVariant, borderRadius: theme.radius.lg }, noNewsMascot: { width: 84, height: 84, borderRadius: 42, borderWidth: 2, borderColor: theme.color.neonYellow }, noNewsTitle: { textAlign: 'center' }, noNewsDescription: { textAlign: 'center', lineHeight: 19 }, noNewsRefresh: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4, backgroundColor: theme.color.primaryContainer, paddingHorizontal: 16, paddingVertical: 10, borderRadius: theme.radius.sm }, noNewsRefreshPressed: { opacity: 0.84 }, noNewsRefreshText: { fontFamily: theme.font.label, color: theme.color.onPrimary, fontSize: 12 },
   pickPrompt: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16, padding: 14, backgroundColor: theme.color.surfaceContainer, borderWidth: 1, borderColor: theme.color.outlineVariant, borderRadius: theme.radius.xl }, pickPromptIcon: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.color.neonYellow }, pickPromptBody: { flex: 1, minWidth: 0, gap: 3 }, pickPromptTitle: { fontFamily: theme.font.bodySemi, fontSize: 15, color: theme.color.onSurface }, pickPromptDesc: { fontFamily: theme.font.body, fontSize: 12, lineHeight: 17, color: theme.color.textMuted }, popularBlock: { marginTop: 16, padding: 14, backgroundColor: theme.color.surfaceContainer, borderRadius: theme.radius.xl, gap: 10 }, popularTitle: { fontFamily: theme.font.bodySemi, fontSize: 14, color: theme.color.onSurface }, popularRow: { flexDirection: 'row', alignItems: 'center', gap: 10 }, popularSwatch: { width: 40, height: 40, borderRadius: theme.radius.md, alignItems: 'center', justifyContent: 'center' }, popularInitial: { fontFamily: theme.font.headlineSemi, fontSize: 16, color: theme.color.onPrimary }, popularBody: { flex: 1, minWidth: 0, gap: 2 }, popularName: { fontFamily: theme.font.bodySemi, fontSize: 14, color: theme.color.onSurface }, popularGenre: { fontFamily: theme.font.body, fontSize: 12, color: theme.color.textMuted }, popularAdd: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.color.neonYellow }, previewLabel: { marginTop: 12, fontFamily: theme.font.body, fontSize: 12, color: theme.color.textMuted },
 });

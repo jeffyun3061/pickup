@@ -1,6 +1,51 @@
 export type ContentKind = 'update' | 'event' | 'popup' | 'goods';
 
+export type AnalysisImportance = 1 | 2 | 3;
+export type AnalysisImpactLevel = 'low' | 'medium' | 'high';
+export type AnalysisConfidence = 'low' | 'medium' | 'high';
+export type CommunitySentiment = 'positive' | 'mixed' | 'negative' | 'unknown';
+
+/**
+ * 공지 원문을 바탕으로 서버 LLM이 만든 참고용 분석.
+ * 커뮤니티 값은 근거 수집 전까지 unknown만 허용한다.
+ */
+export type ContentAnalysis = {
+  importance: AnalysisImportance;
+  impactLevel: AnalysisImpactLevel;
+  impactSummary: string;
+  confidence: AnalysisConfidence;
+  communitySentiment: CommunitySentiment;
+  communitySummary?: string;
+  communitySampleCount?: number;
+  generatedAt?: string;
+};
+
 export const MAX_SELECTED_GAMES = 8;
+
+/**
+ * 시안에서 사용하던 게임 ID를 새 카탈로그 ID로 한 번만 옮긴다.
+ * 삭제 대신 매핑하므로 기존 설치에서 선택 게임이 갑자기 빈 목록이 되지 않는다.
+ */
+const LEGACY_GAME_ID_MIGRATION: Record<string, string> = {
+  g_shadow: 'g_blue_archive',
+  g_neon: 'g_nikke',
+  g_grid: 'g_seven_knights',
+  g_zero: 'g_pokemon_go',
+  g_void: 'g_zenless_zone_zero',
+  g_drift: 'g_girls_frontline_2',
+  g_cyber: 'g_wuthering_waves',
+  g_clash: 'g_ihwan',
+};
+
+// 권리 검토 전 공개 목록에서 보류한 게임은 이전 설치 데이터에서도
+// 다시 선택 상태로 복원하지 않는다. 서버도 활성 카탈로그만 관계에 저장한다.
+// 권리 검토 전 보류: 젠레스 존 제로·명조. `g_wuthering_waves`는
+// 이전 시안에서 명조를 가리키던 ID라 기존 설치 복원도 함께 막는다.
+const RETIRED_GAME_IDS = new Set([
+  'g_zenless_zone_zero',
+  'g_mingchao',
+  'g_wuthering_waves',
+]);
 
 /** 기간 콘텐츠를 화면에서 구분하기 위한 운영 분류. kind는 기존 API 호환용으로 유지한다. */
 export type TimeBoundType =
@@ -39,6 +84,8 @@ export type ContentItem = {
   timeBoundType?: TimeBoundType;
   /** 운영자가 지정한 중요도. 클수록 홈 대표 소식으로 우선 노출 */
   importance?: number;
+  /** 공식 원문 기반 자동 분석(없으면 분석 준비 중) */
+  analysis?: ContentAnalysis;
 };
 
 export type Game = {
@@ -121,10 +168,38 @@ export function timeBoundTypeLabel(type: TimeBoundType): string {
 
 export function normalizeGameIds(ids: unknown): string[] {
   if (!Array.isArray(ids)) return [];
-  return [...new Set(ids.filter((id): id is string => typeof id === 'string'))].slice(
-    0,
-    MAX_SELECTED_GAMES,
-  );
+  const normalized = ids
+    .filter((id): id is string => typeof id === 'string')
+    .map((id) => LEGACY_GAME_ID_MIGRATION[id] ?? id);
+  return [...new Set(normalized)]
+    .filter((id) => !RETIRED_GAME_IDS.has(id))
+    .slice(0, MAX_SELECTED_GAMES);
+}
+
+/**
+ * 서버가 반환한 현재 활성 카탈로그와 설치에 남은 선택값을 동기화한다.
+ * 네트워크 실패 시 호출하지 않아 오프라인 캐시에서 선택이 사라지지 않게 한다.
+ */
+export function reconcileGameIds(
+  ids: unknown,
+  availableGameIds: readonly string[],
+): string[] {
+  const available = new Set(availableGameIds);
+  return normalizeGameIds(ids).filter((id) => available.has(id));
+}
+
+/** 마이픽 카드의 N 배지용 읽지 않은 소식 수를 게임별로 계산한다. */
+export function countUnreadByGame(
+  items: readonly Pick<ContentItem, 'id' | 'gameId'>[],
+  readIds: readonly string[],
+): Map<string, number> {
+  const read = new Set(readIds);
+  const counts = new Map<string, number>();
+  for (const item of items) {
+    if (read.has(item.id)) continue;
+    counts.set(item.gameId, (counts.get(item.gameId) ?? 0) + 1);
+  }
+  return counts;
 }
 
 /** 기간 카드에 넣을 수 있는 콘텐츠인지 판정한다. 시작·종료일이 모두 명시되어야 한다. */

@@ -60,3 +60,21 @@ export async function upsertDeviceToken(params: {
     body: JSON.stringify(params),
   });
 }
+
+/** 앱 데이터 초기화 시 서버의 푸시 토큰·관심 게임도 함께 해지한다. */
+export async function revokeInstallation(): Promise<void> {
+  const credential = await credentialStore.load();
+  if (!credential) return;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 1500);
+  try {
+    await apiFetch<void>('/api/v1/installations/me', {
+      method: 'DELETE',
+      headers: authHeaders(credential),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+    await credentialStore.clear();
+  }
+}
