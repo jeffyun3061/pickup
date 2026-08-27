@@ -142,9 +142,7 @@ export default function GamesScreen() {
           </View>
         </View>
         <AppText variant="caption" numberOfLines={1}>
-          {selected.length === 0
-            ? '좋아하는 게임을 담고 맞춤 소식을 받아보세요'
-            : '내 게임을 모으고 최신 소식을 바로 확인하세요'}
+          게임 소식 준비중
         </AppText>
       </View>
 

@@ -11,7 +11,7 @@ import { useApp } from '@/src/state/AppProvider';
 import { theme } from '@/src/theme/tokens';
 
 export default function GateScreen() {
-  const { ready, preferences } = useApp();
+  const { ready } = useApp();
   const [updateRequired, setUpdateRequired] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -50,12 +50,6 @@ export default function GateScreen() {
         </View>
       </Screen>
     );
-  }
-
-  // 설치 직후에는 탭 화면으로 바로 보내지 않고, 관심 게임을 고르는
-  // 온보딩을 먼저 완료하게 한다. 기존 설치는 저장된 플래그로 즉시 통과한다.
-  if (!preferences.onboardingCompleted) {
-    return <Redirect href="/onboarding" />;
   }
 
   return <Redirect href="/(tabs)" />;
