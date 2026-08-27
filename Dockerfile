@@ -19,6 +19,7 @@ COPY server/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY server/app ./app
+COPY server/scripts ./scripts
 COPY --from=adminweb /web/dist ./admin-dist
 
 # 업로드 이미지는 볼륨(/data)에 저장 — 재배포에도 유지

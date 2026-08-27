@@ -173,6 +173,18 @@ docker compose up -d --build postgres api
 실제 휴대폰 알림은 Railway 운영 환경에서 `EXPO_PUSH_ENABLED=true`와 EAS 네이티브
 빌드를 사용해야 한다.
 
+발표용 목업이 필요하면 API 컨테이너 셸에서 아래 시드를 한 번 실행한다. 12개 선택 게임,
+테스트 1~4 게임을 만들고, 게임마다 전체 소식용 popup/goods 샘플과 푸시 확인용 update/event
+초안을 하나씩 멱등적으로 만든다.
+테스트 초안은 자동 발행하지 않으므로 관리자에서 검수 완료 → 발행 순서로 직접 테스트한다.
+
+```bash
+python scripts/seed_presentation_data.py
+```
+
+시드는 외부 게임 이미지를 복제하지 않고 앱 번들 자체 제작 폴백 이미지만 사용한다. 운영
+발표가 끝나면 테스트 게임·콘텐츠를 관리자에서 비활성화하거나 삭제한다.
+
 Compose의 `postgres`와 `api`는 로컬 통합 검증용이다. `collector`는 자동 수집을 켤 때만
 `docker compose --profile collector up --build`로 추가한다. 운영으로 옮길 때는
 PostgreSQL 컨테이너의 데이터 디렉터리를 복사하지 말고 관리형 PostgreSQL을 새로 만든 뒤
