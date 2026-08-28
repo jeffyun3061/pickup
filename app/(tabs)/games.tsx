@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   screenBody: {
     flexGrow: 1,
     // 탭바가 콘텐츠 위에 떠도 페이지 안내가 가려지지 않게 한다.
-    paddingBottom: 144,
+    paddingBottom: 112,
   },
   featureIntro: {
     borderBottomWidth: 1,

@@ -48,7 +48,7 @@ export function resolveLayout(width: number): LayoutScale {
  */
 export function resolvePickGrid(trackWidth: number): PickGridMetrics {
   const width = Number.isFinite(trackWidth) ? Math.max(0, trackWidth) : 0;
-  const cardHeight = width > 0 ? Math.min(164, Math.max(136, Math.round(width * 0.44))) : 150;
+  const cardHeight = width > 0 ? Math.min(220, Math.max(196, Math.round(width * 0.6))) : 200;
   const rowGap = width > 0 && width < 340 ? 10 : 11;
   const gridHeight = cardHeight * 2 + rowGap;
   return {
