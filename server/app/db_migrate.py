@@ -115,8 +115,9 @@ def _backdate_demo_contents(engine: Engine) -> None:
     """발표용 목업 소식을 과거 기록으로 유지한다.
 
     목업은 화면을 채우기 위한 데이터이므로 오늘 발행된 운영 소식과 같은
-    날짜에 보이면 발표 시연을 가린다. ``c_demo_`` 및 ``c_test_news_`` ID만
-    대상으로 하며, 이미 충분히 오래된 행은 건드리지 않아 매 부팅에도
+    날짜에 보이면 발표 시연을 가린다. 화면을 채우는 ``c_demo_`` ID만
+    대상으로 하며, ``c_test_news_``는 관리자가 오늘 발행할 테스트 소식이므로
+    현재 시각을 유지한다. 이미 충분히 오래된 행은 건드리지 않아 매 부팅에도
     멱등적이다.
     """
     from sqlalchemy import select
@@ -132,8 +133,9 @@ def _backdate_demo_contents(engine: Engine) -> None:
             select(Content).where(
                 Content.id.like("c_demo_%"),
                 Content.status == ContentStatus.published,
-            )
+            ).order_by(Content.id.asc())
         ).all()
+        logger.info("presentation demo contents checked: %d", len(rows))
         changed = False
         for index, content in enumerate(rows):
             historical_at = cutoff - timedelta(minutes=index)
