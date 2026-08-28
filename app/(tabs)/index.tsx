@@ -16,6 +16,7 @@ import {
   eventCountdownLabel,
   formatRelativeTime,
   isActiveTimeBound,
+  isPresentationSeedContent,
   type ContentItem,
 } from '@/src/domain/models';
 import { useCatalog } from '@/src/hooks/useCatalog';
@@ -135,18 +136,25 @@ export default function HomeScreen() {
   // preview 모드에서만 시안 확인을 위해 전체 피드를 보여준다.
   const previewBrowse = catalogMode === 'preview' && selectedCount === 0 && content.length > 0;
   const source = selectedCount > 0 ? mine : previewBrowse ? content : [];
-  const todayItems = useMemo(() => source.filter((item) => isPublished(item.publishedAt, now) && isToday(item.publishedAt, now)), [source, now.getTime()]);
-  const missedItems = useMemo(() => source.filter((item) => isPublished(item.publishedAt, now) && !isToday(item.publishedAt, now) && !readIds.includes(item.id)), [source, readIds, now.getTime()]);
+  // 발표용 시드는 통합 소식의 과거 기록으로만 유지한다. 운영 API에서
+  // 발행 시각이 잘못 오늘로 찍힌 기존 행이 있어도 홈을 오염시키지 않으며,
+  // 실제 대시보드에서 새로 발행한 c_<id> 콘텐츠는 그대로 노출된다.
+  const homeSource = useMemo(
+    () => (catalogMode === 'api' ? source.filter((item) => !isPresentationSeedContent(item)) : source),
+    [source],
+  );
+  const todayItems = useMemo(() => homeSource.filter((item) => isPublished(item.publishedAt, now) && isToday(item.publishedAt, now)), [homeSource, now.getTime()]);
+  const missedItems = useMemo(() => homeSource.filter((item) => isPublished(item.publishedAt, now) && !isToday(item.publishedAt, now) && !readIds.includes(item.id)), [homeSource, readIds, now.getTime()]);
   const todayGroups = useMemo(() => groupByGame(todayItems, readIds, false), [todayItems, readIds]);
   const missedGroups = useMemo(() => groupByGame(missedItems, readIds, true), [missedItems, readIds]);
   const events = useMemo(
     () =>
-      source
+      homeSource
         // 일반 공지의 날짜는 게시/적용 시각일 수 있다. 이벤트 기간 탭에는
         // 실제 기간형 콘텐츠만 노출해 공지와 기간 콘텐츠의 의미를 섞지 않는다.
         .filter((item) => item.kind !== 'update' && isActiveTimeBound(item, now))
         .sort((a, b) => +new Date(a.endsAt ?? 0) - +new Date(b.endsAt ?? 0)),
-    [source, now.getTime()],
+    [homeSource, now.getTime()],
   );
   const hasHomeNews = todayGroups.length > 0 || missedGroups.length > 0;
   const popularGames = useMemo(() => [...games].sort((a, b) => b.interestCount - a.interestCount).slice(0, 3), [games]);

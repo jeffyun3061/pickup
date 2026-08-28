@@ -11,6 +11,7 @@ DATABASE_URL이 주입된 상태로 한 번만 실행한다. 게임 이름·자�
 from __future__ import annotations
 
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -29,7 +30,7 @@ TEST_GAMES = [
     ("g_test_04", "테스트 4", "4", "알림 테스트", "#433B62", "rankGrid"),
 ]
 
-# 게임별로 한 건씩 전체 소식에 노출할 샘플이다. popup/goods만 발행해
+# 게임별로 한 건씩 전체 소식에 노출할 과거 샘플이다. popup/goods로 구성해
 # 시드 실행 순간 기존 설치에 업데이트 푸시가 쏟아지지 않게 한다.
 GLOBAL_FEED_MOCKS = [
     ("c_demo_feed_01", "g_honkai_star_rail", "popup", "붕괴: 스타레일 개발자 노트 팝업", ["신규 지역과 캐릭터 관련 안내", "발표용 카드 목업"]),
@@ -49,6 +50,10 @@ GLOBAL_FEED_MOCKS = [
     ("c_demo_feed_15", "g_test_03", "popup", "테스트 3 행사 카드 샘플", ["장소와 예약 링크 입력 UI 확인", "운영 전용 샘플 데이터"]),
     ("c_demo_feed_16", "g_test_04", "goods", "테스트 4 상품 카드 샘플", ["전체 소식 목록 노출 확인", "운영 전용 샘플 데이터"]),
 ]
+
+# c_demo 데이터만 통합 소식의 과거 기록으로 사용한다. c_test_news 초안은
+# 운영자가 직접 발행해 알림을 시연할 수 있어야 하므로 날짜를 건드리지 않는다.
+PRESENTATION_HISTORY_AT = datetime.now(timezone.utc) - timedelta(days=7)
 
 # 사용자가 직접 검수→발행해 푸시를 확인할 수 있는 초안. 실제 12개 게임과
 # 테스트 1~4 모두 준비해 두므로 원하는 게임 하나만 선택해 바로 시험한다.
@@ -104,6 +109,12 @@ def ensure_content(service: AdminService, db, content_id: str, game_id: str, kin
             status=status,
         )
     )
+    if status == "published" and content_id.startswith("c_demo_"):
+        seeded = db.get(Content, content_id)
+        if seeded is not None:
+            seeded.published_at = PRESENTATION_HISTORY_AT
+            seeded.created_at = min(seeded.created_at, PRESENTATION_HISTORY_AT)
+            seeded.updated_at = min(seeded.updated_at, PRESENTATION_HISTORY_AT)
     return True
 
 

@@ -88,6 +88,18 @@ export type ContentItem = {
   analysis?: ContentAnalysis;
 };
 
+/**
+ * 발표 화면을 채우기 위해 넣은 시드 콘텐츠인지 판별한다.
+ *
+ * 발표용 데이터는 통합 소식/내 게임의 과거 기록으로는 유용하지만,
+ * 운영 홈의 "오늘 소식"과 놓친 소식에는 섞이면 안 된다. 서버에서
+ * 별도 플래그를 추가하지 않아도 기존 데이터까지 안전하게 정리할 수
+ * 있도록 시드 스크립트가 예약한 목업 ID 접두사를 한 곳에서 관리한다.
+ */
+export function isPresentationSeedContent(item: Pick<ContentItem, 'id'>): boolean {
+  return item.id.startsWith('c_demo_');
+}
+
 export type Game = {
   id: string;
   name: string;

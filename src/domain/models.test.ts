@@ -5,6 +5,7 @@ import {
   eventCountdownLabel,
   isActiveTimeBound,
   isOfflineKind,
+  isPresentationSeedContent,
   kindLabel,
   MAX_SELECTED_GAMES,
   normalizeGameIds,
@@ -63,6 +64,12 @@ describe('home rules', () => {
       ['g1', 1],
       ['g2', 1],
     ]);
+  });
+
+  it('keeps presentation seed content out of the operational home feed', () => {
+    expect(isPresentationSeedContent({ id: 'c_demo_feed_01' })).toBe(true);
+    expect(isPresentationSeedContent({ id: 'c_test_news_01' })).toBe(false);
+    expect(isPresentationSeedContent({ id: 'c_2026_real_notice' })).toBe(false);
   });
 });
 

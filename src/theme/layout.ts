@@ -44,11 +44,12 @@ export function resolveLayout(width: number): LayoutScale {
  *
  * 카드 2줄과 페이지 점이 하단 탭바에 가리지 않도록 카드 높이를
  * 폭과 페이지 구조에 맞춰 제한한다. 등록 전에도 4개 슬롯과 점을
- * 한 화면에서 확인할 수 있는 쪽을 우선한다.
+ * 한 화면에서 확인할 수 있도록 넓게 쓰되, 작은 기기에서는 스크롤로
+ * 안전하게 끝까지 접근할 수 있는 범위를 유지한다.
  */
 export function resolvePickGrid(trackWidth: number): PickGridMetrics {
   const width = Number.isFinite(trackWidth) ? Math.max(0, trackWidth) : 0;
-  const cardHeight = width > 0 ? Math.min(220, Math.max(196, Math.round(width * 0.6))) : 200;
+  const cardHeight = width > 0 ? Math.min(250, Math.max(218, Math.round(width * 0.68))) : 220;
   const rowGap = width > 0 && width < 340 ? 10 : 11;
   const gridHeight = cardHeight * 2 + rowGap;
   return {

@@ -115,14 +115,18 @@ def _backdate_demo_contents(engine: Engine) -> None:
     """발표용 목업 소식을 과거 기록으로 유지한다.
 
     목업은 화면을 채우기 위한 데이터이므로 오늘 발행된 운영 소식과 같은
-    날짜에 보이면 발표 시연을 가린다. ``c_demo_`` ID만 대상으로 하며,
-    이미 충분히 오래된 행은 건드리지 않아 매 부팅에도 멱등적이다.
+    날짜에 보이면 발표 시연을 가린다. ``c_demo_`` 및 ``c_test_news_`` ID만
+    대상으로 하며, 이미 충분히 오래된 행은 건드리지 않아 매 부팅에도
+    멱등적이다.
     """
     from sqlalchemy import select
 
     from app.models.entities import Content, ContentStatus
 
-    cutoff = datetime.now(timezone.utc) - timedelta(days=3)
+    # 발표용 데이터는 최소 일주일 전 기록으로 보이게 한다. 날짜를 고정하지
+    # 않고 매 부팅 현재 시각 기준으로 계산하므로 시간이 지나도 홈의 오늘
+    # 소식으로 되돌아오지 않는다.
+    cutoff = datetime.now(timezone.utc) - timedelta(days=7)
     with Session(engine) as db:
         rows = db.scalars(
             select(Content).where(
