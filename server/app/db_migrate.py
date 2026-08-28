@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 import json
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import inspect, text
 from sqlalchemy.engine import Engine
@@ -71,6 +72,7 @@ def ensure_schema(engine: Engine) -> None:
                 logger.info("schema migrated: %s.%s", table, name)
 
     _backfill_installation_games(engine)
+    _backdate_demo_contents(engine)
 
 
 def _backfill_installation_games(engine: Engine) -> None:
@@ -107,3 +109,47 @@ def _backfill_installation_games(engine: Engine) -> None:
         if changed:
             db.commit()
             logger.info("backfilled installation_games from legacy preferences")
+
+
+def _backdate_demo_contents(engine: Engine) -> None:
+    """발표용 목업 소식을 과거 기록으로 유지한다.
+
+    목업은 화면을 채우기 위한 데이터이므로 오늘 발행된 운영 소식과 같은
+    날짜에 보이면 발표 시연을 가린다. ``c_demo_`` ID만 대상으로 하며,
+    이미 충분히 오래된 행은 건드리지 않아 매 부팅에도 멱등적이다.
+    """
+    from sqlalchemy import select
+
+    from app.models.entities import Content, ContentStatus
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=3)
+    with Session(engine) as db:
+        rows = db.scalars(
+            select(Content).where(
+                Content.id.like("c_demo_%"),
+                Content.status == ContentStatus.published,
+            )
+        ).all()
+        changed = False
+        for index, content in enumerate(rows):
+            historical_at = cutoff - timedelta(minutes=index)
+            published_at = content.published_at
+            if published_at is not None and published_at.tzinfo is None:
+                published_at = published_at.replace(tzinfo=timezone.utc)
+            if published_at is not None and published_at <= cutoff:
+                continue
+            content.published_at = historical_at
+            created_at = content.created_at
+            if created_at is not None and created_at.tzinfo is None:
+                created_at = created_at.replace(tzinfo=timezone.utc)
+            updated_at = content.updated_at
+            if updated_at is not None and updated_at.tzinfo is None:
+                updated_at = updated_at.replace(tzinfo=timezone.utc)
+            if created_at is None or created_at > historical_at:
+                content.created_at = historical_at
+            if updated_at is None or updated_at > historical_at:
+                content.updated_at = historical_at
+            changed = True
+        if changed:
+            db.commit()
+            logger.info("backdated presentation demo contents")

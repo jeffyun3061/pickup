@@ -322,6 +322,9 @@ class PushService:
                 "body": body,
                 "data": payload,
                 "sound": "default",
+                # Android 채널이 HIGH여도 기기별 기본 우선순위가 낮으면
+                # 상단 헤드업 표시가 늦어질 수 있어 Expo에도 명시한다.
+                "priority": "high",
                 "channelId": _ANDROID_PUSH_CHANNEL_ID,
             }
             for token in expo_tokens

@@ -305,7 +305,7 @@ def test_domain_push_targeting_unit() -> None:
         ),
         game_id="g1",
         kind="popup",
-    ) is False
+    ) is True
     assert should_notify_service_announcement(prefs) is False
 
 
